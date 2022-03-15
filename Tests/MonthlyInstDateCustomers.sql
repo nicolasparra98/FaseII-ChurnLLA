@@ -10,4 +10,4 @@ GROUP BY cst_cust_cd
 SELECT DATE_TRUNC(MinInstDate, MONTH) as MonthInst, COUNT(DISTINCT cst_cust_cd)
 FROM CustomersFirstDate
 GROUP BY MonthInst 
-ORDER BY MonthInst
+ORDER BY MonthInst desc
