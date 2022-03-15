@@ -1,3 +1,7 @@
+/*Tener en cuenta: 
+  1. Se deben modificar las fechas de CustomersEndFebruary y GrossAddsFebruary para que sean iguales
+  2. Verificar que todas las fechas estén ya sea en act_acct_inst_dt o en act_cust_strt_dt */
+  
 WITH 
 
 CustomersBegFebruary AS (
