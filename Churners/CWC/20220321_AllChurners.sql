@@ -31,7 +31,6 @@ WHERE org_cntry="Jamaica" AND ACT_ACCT_STAT IN ('B','D','P','SN','SR','T','W')
 -- Date of the last record of the month per customer
 LastRecordDateDNA AS(
 SELECT DISTINCT DATE_TRUNC(LOAD_DT, MONTH) AS Month, act_acct_cd,max(load_dt) as LastDate
-,(date_diff(MAX(load_dt), MAX(act_cust_strt_dt), DAY)) as Tenure
 FROM `gcp-bia-tmps-vtr-dev-01.gcp_temp_cr_dev_01.cwc_jam_dna_fullmonth_202202` 
 WHERE org_cntry="Jamaica" AND ACT_ACCT_STAT IN ('B','D','P','SN','SR','T','W')
  AND ACT_CUST_TYP_NM IN ('Browse & Talk HFONE', 'Residence', 'Standard') 
@@ -41,7 +40,7 @@ WHERE org_cntry="Jamaica" AND ACT_ACCT_STAT IN ('B','D','P','SN','SR','T','W')
 ),
 -- Number of outstanding days on the last record date
 OverdueLastRecordDNA AS(
-SELECT DISTINCT DATE_TRUNC(LOAD_DT, MONTH) AS Month, t.act_acct_cd, fi_outst_age as LastOverdueRecord,d.Tenure
+SELECT DISTINCT DATE_TRUNC(LOAD_DT, MONTH) AS Month, t.act_acct_cd, fi_outst_age as LastOverdueRecord
 FROM `gcp-bia-tmps-vtr-dev-01.gcp_temp_cr_dev_01.cwc_jam_dna_fullmonth_202202` t 
 INNER JOIN LastRecordDateDNA d ON t.act_acct_cd = d.act_acct_cd AND t.load_dt = d.LastDate
 WHERE org_cntry="Jamaica" AND ACT_ACCT_STAT IN ('B','D','P','SN','SR','T','W')
@@ -49,7 +48,7 @@ WHERE org_cntry="Jamaica" AND ACT_ACCT_STAT IN ('B','D','P','SN','SR','T','W')
 ),
 -- Total Voluntary Churners considering number of churned RGUs, outstanding age and churn date
 VoluntaryTotalChurners AS(
-SELECT distinct l.Month, l.act_acct_cd, d.LastDate,d.Tenure,
+SELECT distinct l.Month, l.act_acct_cd, d.LastDate,
 CASE WHEN length(cast(l.act_acct_cd AS STRING)) = 12 THEN "1. Liberate"
 ELSE "2. Cerilion" END AS BillingSystem,
 CASE WHEN (d.LastDate = date_trunc(d.LastDate, Month) or d.LastDate = LAST_DAY(d.LastDate, MONTH)) THEN "1. First/Last Day Churner"
@@ -62,28 +61,27 @@ INNER JOIN LastRecordDateDNA d on f.src_account_id = d.act_acct_cd AND f.ChurnMo
 INNER JOIN OverdueLastRecordDNA o ON f.src_account_id = o.act_acct_cd AND f.ChurnMonth = o.Month
 )
 ,VoluntaryChurners AS(
-SELECT Month, SAFE_CAST(act_acct_cd AS STRING) AS Account, ChurnerType,Tenure
+SELECT Month, SAFE_CAST(act_acct_cd AS STRING) AS Account, ChurnerType
 FROM VoluntaryTotalChurners 
 WHERE ChurnerType="1. VoluntaryChurner"
-GROUP BY Month, act_acct_cd, ChurnerType,Tenure
+GROUP BY Month, act_acct_cd, ChurnerType
 )
 ---------------------------------------------------Involuntary Churners-------------------------------------------------------------------
 ,CUSTOMERS_FIRSTLAST_RECORD AS(
  SELECT DISTINCT DATE_TRUNC (LOAD_DT, MONTH) AS MES, act_acct_cd AS Account, Min(load_dt) as FirstCustRecord, Max(load_dt) as LastCustRecord
- ,(date_diff(MAX(load_dt), MAX(act_cust_strt_dt), DAY)) as Tenure
  FROM `gcp-bia-tmps-vtr-dev-01.gcp_temp_cr_dev_01.cwc_jam_dna_fullmonth_202202` 
  WHERE org_cntry = "Jamaica" 
  AND ACT_CUST_TYP_NM IN ('Browse & Talk HFONE', 'Residence', 'Standard') AND ACT_ACCT_STAT IN ('B','D','P','SN','SR','T','W') 
  GROUP BY MES, account
 ),
 NO_OVERDUE AS(
- SELECT DISTINCT DATE_TRUNC (LOAD_DT, MONTH) AS MES, act_acct_cd AS Account, fi_outst_age,Tenure
+ SELECT DISTINCT DATE_TRUNC (LOAD_DT, MONTH) AS MES, act_acct_cd AS Account, fi_outst_age
  FROM `gcp-bia-tmps-vtr-dev-01.gcp_temp_cr_dev_01.cwc_jam_dna_fullmonth_202202` t
  INNER JOIN CUSTOMERS_FIRSTLAST_RECORD r ON t.load_dt = r.FirstCustRecord and r.account = t.act_acct_cd
  WHERE org_cntry = "Jamaica" 
  AND ACT_CUST_TYP_NM IN ('Browse & Talk HFONE', 'Residence', 'Standard') AND ACT_ACCT_STAT IN ('B','D','P','SN','SR','T','W') 
  AND fi_outst_age <= 90
- GROUP BY MES, account, fi_outst_age,Tenure
+ GROUP BY MES, account, fi_outst_age
 ),
 OVERDUELASTDAY AS(
  SELECT DISTINCT DATE_TRUNC (LOAD_DT, MONTH) AS MES, act_acct_cd AS Account, fi_outst_age 
@@ -95,20 +93,19 @@ OVERDUELASTDAY AS(
  GROUP BY MES, account, fi_outst_age  
 ),
 INVOLUNTARYNETCHURNERS AS(
- SELECT DISTINCT n.MES AS Month, n. account,Tenure
+ SELECT DISTINCT n.MES AS Month, n. account
  FROM NO_OVERDUE n INNER JOIN OVERDUELASTDAY l ON n.account = l.account and n.MES = l.MES
 )
 ,InvoluntaryChurners AS(
 SELECT DISTINCT Month, SAFE_CAST(Account AS STRING) AS Account
 ,CASE WHEN Account IS NOT NULL THEN "2. InvoluntaryChurner" END AS ChurnerType
-,Tenure
 FROM INVOLUNTARYNETCHURNERS 
-GROUP BY Month, Account,Tenure,ChurnerType
+GROUP BY Month, Account,ChurnerType
 )
 ,AllChurners AS(
-SELECT DISTINCT Month,Account,ChurnerType,Tenure
-from (SELECT Month,Account,ChurnerType,Tenure from VoluntaryChurners a 
+SELECT DISTINCT Month,Account,ChurnerType
+from (SELECT Month,Account,ChurnerType from VoluntaryChurners a 
       UNION ALL
-      SELECT Month,Account,ChurnerType,Tenure from InvoluntaryChurners b)
+      SELECT Month,Account,ChurnerType from InvoluntaryChurners b)
 )
 SELECT * FROM AllChurners
