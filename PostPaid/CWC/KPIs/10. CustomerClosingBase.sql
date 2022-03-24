@@ -9,6 +9,6 @@ WHERE country_name="nan" AND dt=LAST_DAY(dt,Month)
  AND account_status IN('Working','In Default','Promise to pay','TOSd')
  AND account_type ="Residential"
 )
-SELECT Month, COUNT(DISTINCT account_id)
+SELECT Month, COUNT(DISTINCT account_id) AS Records
 FROM MobileClosingBase 
 GROUP BY Month ORDER BY Month
