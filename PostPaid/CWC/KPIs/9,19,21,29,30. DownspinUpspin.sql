@@ -5,7 +5,7 @@ SELECT account_id,dt,total_mrc_mo
  ,DATE_DIFF(safe_cast(dt as date),safe_cast(lst_pymt_dt as date),DAY) AS fi_outst_age
 FROM `gcp-bia-tmps-vtr-dev-01.lla_temp_dna_tables.cwc_info_dna_postpaid_history_v2` 
 WHERE org_id = "338" AND account_type ="Residential"
-AND total_mrc_mo IS NOT NULL AND SAFE_CAST(total_mrc_mo AS STRING) NOT LIKE "%NaN%" AND total_mrc_mo <> 0
+AND total_mrc_mo IS NOT NULL AND NOT IS_NAN(total_mrc_mo) AND total_mrc_mo <> 0 
 )
 ,ActiveUsersBOM AS(
 SELECT DISTINCT DATE_TRUNC(DATE_ADD(dt, INTERVAL 1 MONTH),MONTH) AS Month, account_id AS accountBOM,dt,total_mrc_mo AS mrcBOM
@@ -48,7 +48,17 @@ SELECT DISTINCT Account,Month,GainLossFlag,mrcBOM,mrcEOM,(mrcEOM-mrcBOM) AS mrcD
       ELSE "4.NoSpin" END AS SpinFlag
 FROM CLassification
 )
-SELECT DISTINCT Month,SpinFlag,ROUND(SUM(mrcDif)) AS Revenue,ROUND(AVG(mrcDif),2) AS ARPU,COUNT(DISTINCT account) AS Records
+SELECT DISTINCT Month
+--,GainLossFlag
+,SpinFlag
+,ROUND(SUM(mrcDif)) AS Revenue
+,ROUND(SUM(mrcDif)/COUNT(DISTINCT account),2) AS ARPU
+,COUNT(DISTINCT account) AS Records
 FROM SpinClass
-GROUP BY Month,SpinFlag
-ORDER BY Month,SpinFlag
+GROUP BY Month
+--,GainLossFlag
+,SpinFlag
+ORDER BY Month
+--,GainLossFlag
+,SpinFlag
+
