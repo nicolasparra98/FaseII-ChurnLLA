@@ -2,20 +2,20 @@ WITH
 
 UsefulFields AS(
 SELECT account_id,dt
- ,DATE_DIFF(safe_cast(dt as date),safe_cast(lst_pymt_dt as date),DAY) AS fi_outst_age
 FROM `gcp-bia-tmps-vtr-dev-01.lla_temp_dna_tables.cwc_info_dna_postpaid_history_v2` 
 WHERE org_id = "338" AND account_type ="Residential"
+ AND account_status NOT IN('Ceased','Closed','Recommended for cease')
 )
 ,ActiveUsersBOM AS(
 SELECT DISTINCT DATE_TRUNC(DATE_ADD(dt, INTERVAL 1 MONTH),MONTH) AS Month, account_id AS accountBOM,dt
 FROM UsefulFields
-WHERE (fi_outst_age<=90 OR fi_outst_age IS NULL) AND DATE(dt) = LAST_DAY(dt, MONTH)
+WHERE dt=LAST_DAY(dt,Month)
 GROUP BY 1,2,3
 )
 ,ActiveUsersEOM AS(
 SELECT DISTINCT DATE_TRUNC(DATE(dt),MONTH) AS Month, account_id AS accountEOM,dt
 FROM UsefulFields
-WHERE fi_outst_age<=90 OR fi_outst_age IS NULL AND DATE(dt) = LAST_DAY(DATE(dt), MONTH)
+WHERE dt=LAST_DAY(dt,Month)
 GROUP BY 1,2,3
 )
 ,CustomerStatus AS(
@@ -43,3 +43,4 @@ SELECT DISTINCT Month,GainLossFlag,count(distinct account) AS Records
 FROM Classification
 GROUP BY Month,GainLossFlag
 ORDER BY Month,GainLossFlag
+
