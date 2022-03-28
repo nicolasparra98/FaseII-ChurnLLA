@@ -7,7 +7,6 @@ FROM `gcp-bia-tmps-vtr-dev-01.lla_temp_dna_tables.cwc_info_dna_postpaid_history_
 WHERE org_id = "338" AND account_type ="Residential"
  AND total_mrc_mo IS NOT NULL AND NOT IS_NAN(total_mrc_mo) AND total_mrc_mo <> 0 
  AND account_status NOT IN('Ceased','Closed','Recommended for cease')
- AND total_mrc_mo IS NOT NULL AND NOT IS_NAN(total_mrc_mo) AND total_mrc_mo <> 0 
 )
 ,ActiveUsersBOM AS(
 SELECT DISTINCT DATE_TRUNC(DATE_ADD(dt, INTERVAL 1 MONTH),MONTH) AS Month, account_id AS accountBOM,dt,total_mrc_mo AS mrcBOM
