@@ -6,7 +6,7 @@ FROM `gcp-bia-tmps-vtr-dev-01.lla_temp_dna_tables.cwc_info_dna_postpaid_history`
 WHERE org_id = "338" AND account_type ="Residential"
  AND account_status NOT IN('Ceased','Closed','Recommended for cease')
 GROUP BY account_id,Month
-HAVING MinStartDate>=Month
+HAVING MinStartDate>=Month AND DATE_TRUNC(MinStartDate,Month)=Month
 )
 SELECT --Month,account_id
 Month,COUNT(DISTINCT account_id) AS GrossAdds
