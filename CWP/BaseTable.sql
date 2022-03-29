@@ -2,6 +2,7 @@ WITH
 UsefulFields AS(
 SELECT ACT_ACCT_CD, DT
 FROM `gcp-bia-tmps-vtr-dev-01.lla_temp_dna_tables.cwp_info_dna_fixed_history_v2` 
+  WHERE ACT_CUST_TYP_NM="Residencial"
 )
 ,ActiveUsersBOM AS(
 SELECT DISTINCT DATE_TRUNC(DATE(DT),Month) AS Month, ACT_ACCT_CD AS accountBOM,dt
