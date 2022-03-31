@@ -1,0 +1,19 @@
+WITH 
+MobileBase AS(
+SELECT DISTINCT DATE_TRUNC(SAFE_CAST(dt AS DATE),MONTH) AS MONTH
+,LEFT(CONCAT(ACCOUNTNO,'000000000000') ,12) AS ACCOUNTNO,SAFE_CAST(SERVICENO AS INT64) AS SERVICENO
+,ACCOUNTNAME,NUMERO_IDENTIFICACION
+FROM `gcp-bia-tmps-vtr-dev-01.lla_temp_dna_tables.cwp_info_dna_postpaid_history` 
+WHERE BIZ_UNIT_D="B2C"
+)
+,DNA AS(
+SELECT DISTINCT DATE_TRUNC(DT,Month) AS Month
+,SAFE_CAST(ACT_ACCT_CD AS STRING) AS ACT_ACCT_CD
+,ACT_ACCT_NAME,ACT_ACCT_ID_VAL,SAFE_CAST(ACT_CONTACT_PHONE_1 AS INT64) AS ACT_CONTACT_PHONE_1
+FROM `gcp-bia-tmps-vtr-dev-01.lla_temp_dna_tables.cwp_info_dna_fixed_history_v2` 
+WHERE PD_MIX_CD<>"0P" 
+)
+
+SELECT distinct d.month,count(distinct act_acct_cd)
+FROM MobileBase m INNER JOIN DNA d ON m.serviceno=d.ACT_CONTACT_PHONE_1 AND d.Month=m.Month
+group by d.MONTH
