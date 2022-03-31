@@ -1,0 +1,15 @@
+WITH 
+PaqueteCompleto AS(
+SELECT *,DATE_TRUNC(PARSE_DATE("%Y%m%d",Date),MONTH) as Mes
+FROM `gcp-bia-tmps-vtr-dev-01.lla_temp_dna_tables.20220330_cwp_reporte_fmc` 
+)
+,MobileBase AS(
+SELECT DISTINCT DATE_TRUNC(SAFE_CAST(dt AS DATE),MONTH) AS MONTH
+,LEFT(CONCAT(ACCOUNTNO,'000000000000') ,12) AS ACCOUNTNO,SAFE_CAST(SERVICENO AS INT64) AS SERVICENO
+,ACCOUNTNAME,NUMERO_IDENTIFICACION
+FROM `gcp-bia-tmps-vtr-dev-01.lla_temp_dna_tables.cwp_info_dna_postpaid_history` 
+WHERE BIZ_UNIT_D="B2C"
+)
+SELECT DISTINCT Month,COUNT(DISTINCT SERVICENO)
+FROM PaqueteCompleto p INNER JOIN MobileBase m ON SERVICE_ID=SERVICENO and mes=month
+GROUP BY Month
