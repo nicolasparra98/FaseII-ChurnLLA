@@ -15,10 +15,11 @@ GROUP BY DT,MonthM,ACT_ACCT_CDM
 SELECT ACT_ACCT_CD, DT,act_cust_strt_dt, PD_VO_PROD_CD, PD_BB_PROD_CD, PD_TV_PROD_CD,
 avg(FI_VO_MRC_AMT) AS avgVO, avg(FI_BB_MRC_AMT) as avgBB, avg(FI_TV_MRC_AMT) AS avgTV
 ,SAFE_CAST(ACT_CONTACT_PHONE_1 AS INT64) AS ACT_CONTACT_PHONE_1,ACT_ACCT_ID_VAL
-,DATE_TRUNC(DT,MONTH) AS MONTH
+,DATE_TRUNC(DATE_SUB(DT, INTERVAL 1 MONTH),MONTH) AS MONTH
 FROM `gcp-bia-tmps-vtr-dev-01.lla_temp_dna_tables.cwp_info_dna_fixed_history_v2` 
   WHERE PD_MIX_CD<>"0P"
-  AND (safe_cast(fi_outst_age as int64) <= 90 OR fi_outst_age IS NULL) 
+  AND (safe_cast(fi_outst_age as int64) <= 90 OR fi_outst_age IS NULL)
+  AND dt='2022-03-02'
   GROUP BY 1,2,3,4,5,6,ACT_CONTACT_PHONE_1,ACT_ACCT_ID_VAL
 )
 ,PaqueteCompleto AS(
@@ -51,4 +52,9 @@ SELECT u.*
 FROM UsefulfieldsFixed u LEFT JOIN UsuariosFMC1 a ON u.ACT_ACCT_CD=a.Account AND u.Month=a.MonthA
  LEFT JOIN UsuariosFMC2 b ON u.ACT_CONTACT_PHONE_1=b.SERVICENO AND u.Month=b.MonthM
 )
-SELECT * FROM BaseFlagFMC 
+SELECT DISTINCT Month, FlagFMC, COUNT(DISTINCT ACT_ACCT_CD) AS Records
+FROM BaseFlagFMC 
+GROUP BY Month, FlagFMC
+ORDER BY Month, FlagFMC
+
+--select * from usuariosfmc1
