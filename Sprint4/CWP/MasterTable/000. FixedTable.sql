@@ -358,7 +358,7 @@ SELECT DISTINCT m.*
 FROM MonthFixedRejoiners m LEFT JOIN SO_Flag s ON m.FixedAccount=CAST(s.Account_id AS VARCHAR) AND DATE_TRUNC('MONTH',s.StartDate)=m.FixedMonth
 )
 ,FinalChurnFlag_SO AS(
-SELECT DISTINCT FixedMonth,FixedAccount,F_ActiveBOM,F_ActiveEOM,Fix_B_Date,FixedAccount_BOM,Fixed_B_Phone,B_Overdue,Fixed_B_MaxStart,B_FixedTenure,B_Fixed_MRC,B_TechFlag,B_NumRGUs,B_MixName_Adj,B_MixCode_Adj,B_bbCode,B_tvCode,B_voCode,B_Hard_FMC_Flag,Fix_E_Date,Fixed_E_Phone,E_Overdue,Fixed_E_MaxStart,E_FixedTenure,E_Fixed_MRC,E_TechFlag,E_NumRGUs,E_MixName_Adj,E_MixCode_Adj,E_bbCode,E_tvCode,E_voCode,E_Hard_FMC_Flag,First_sales_chnl_bom,Last_sales_chnl_bom,First_sales_chnl_eom,Last_sales_chnl_eom,FixedMainMovement
+SELECT DISTINCT FixedMonth,FixedAccount,F_ActiveBOM,F_ActiveEOM,Fix_B_Date,FixedAccount_BOM,Fixed_B_Phone,B_Overdue,Fixed_B_MaxStart,B_FixedTenure,B_Fixed_MRC,B_TechFlag,B_NumRGUs,B_MixName_Adj,B_MixCode_Adj,B_bbCode,B_tvCode,B_voCode,B_Hard_FMC_Flag,Fix_E_Date,Fixed_E_Phone,E_Overdue,Fixed_E_MaxStart,E_FixedTenure,E_Fixed_MRC,E_TechFlag,E_NumRGUs,E_MixName_Adj,E_MixCode_Adj,E_bbCode,E_tvCode,E_voCode,E_Hard_FMC_Flag,First_sales_chnl_bom,Last_sales_chnl_bom,First_sales_chnl_eom,Last_sales_chnl_eom,FixedMainMovement,FixedSpinMovement
 ,CASE WHEN  (earlydxflag=1 OR migrtflag=1) THEN '1. Fixed Churner'
       ELSE FixedChurnFlag
 END AS FixedChurnFlag
@@ -376,3 +376,4 @@ FROM InvFlagSO
 )
 SELECT DISTINCT *
 FROM FinalChurnFlag_SO
+
