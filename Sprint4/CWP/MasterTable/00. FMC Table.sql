@@ -9,7 +9,7 @@ FixedConvergency AS(
 
 ,MobileConvergency AS(
 SELECT * 
-FROM "lla_cco_int_stg"."cwp_mob_stg_dashboardinput_dinamico_RJ"
+FROM "lla_cco_int_stg"."cwp_mob_stg_dashboardinput_dinamico_RJ_v2"
 )
 /*SELECT DISTINCT *--Count (DISTINCT Mobile_Account)
 FROM MobileConvergency
