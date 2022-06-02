@@ -1,7 +1,7 @@
 -----E18-----E19-----E20-----
 WITH 
 check_tech as (
-Select distinct date_trunc('month',date(load_dt)), date(load_dt) as load_dt, act_acct_cd,
+Select distinct date_trunc('month',date(load_dt)) as month, date(load_dt) as load_dt, act_acct_cd,
     Case When pd_bb_accs_media = 'FTTH' Then '1. FTTH'
         When pd_bb_accs_media = 'HFC' Then '2. HFC'
         when pd_TV_accs_media = 'FTTH' AND pd_bb_accs_media  IS NULL Then '1. FTTH'
@@ -10,7 +10,7 @@ Select distinct date_trunc('month',date(load_dt)), date(load_dt) as load_dt, act
         when pd_VO_accs_media = 'HFC' AND pd_bb_accs_media  IS NULL AND pd_TV_accs_media IS NULL Then '2. HFC'
     ELSE '3. Copper' end as Technology
 FROM "lla_cco_int_stg"."cwp_fix_union_dna"
---poner filtro residencial?
+WHERE act_cust_typ_nm = 'Residencial'
 )
 ,clean_interaction_time as (
 select distinct *
@@ -228,11 +228,10 @@ case when Interactions = 1 THEN '1'
      when Interactions = 2 THEN '2' 
      when Interactions >= 3 THEN '>3'
 else null end as InteractionsTier
-FROM Interactions_Count
+FROM Interactions_Count i --INNER JOIN Check_Tech c ON c.act_acct_cd=i.account_id AND c.Month=i.InteractionMonth
 )
 select distinct interactionmonth as Month,InteractionsTier,COUNT(DISTINCT account_id) AS Records
 from Filter_KPIs
 where interactionmonth>=date('2021-10-01')
 group by 1,2
 order by 1,2
-
