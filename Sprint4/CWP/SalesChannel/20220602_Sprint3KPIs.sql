@@ -496,7 +496,8 @@ FROM FullTable_KPIsFlags f LEFT JOIN SalesChannel_SO s ON f.fixedaccount=cast(s.
 --select Month, sum(early_ticket_flag), count(distinct F_EarlyTicketFlag) as Unique_EarlyTicket from fullTable_KPIsFLAGS group by 1 
 ------ RESULTS QUERY -----------------------
 
-select Month, B_Final_TechFlag, B_FMCSegment, E_Final_TechFlag, E_FMCSegment, B_FixedTenure,E_FixedTenure,count(distinct fixedaccount) as activebase, sum(monthsale_flag) as Sales, sum(STRAIGHT_SOFT_DX_FLAG) as Soft_Dx, sum (Never_Paid_Flag) as NeverPaid, sum(late_inst_flag) as Long_installs,sum(early_interaction_flag) as Early_Issues, sum(early_ticket_flag) as Early_ticket, count(distinct F_SalesFlag) as Unique_Sales, count(distinct F_SoftDxFlag) as Unique_SoftDx,
+select Month, B_Final_TechFlag, B_FMCSegment, E_Final_TechFlag, E_FMCSegment, b_final_tenure
+e_final_tenure,B_FixedTenure,E_FixedTenure,count(distinct fixedaccount) as activebase, sum(monthsale_flag) as Sales, sum(STRAIGHT_SOFT_DX_FLAG) as Soft_Dx, sum (Never_Paid_Flag) as NeverPaid, sum(late_inst_flag) as Long_installs,sum(early_interaction_flag) as Early_Issues, sum(early_ticket_flag) as Early_ticket, count(distinct F_SalesFlag) as Unique_Sales, count(distinct F_SoftDxFlag) as Unique_SoftDx,
     count(distinct F_NeverPaidFlag) as Unique_NeverPaid,
     count(distinct F_LongInstallFlag) as Unique_LongInstall,
     count(distinct F_EarlyInteractionFlag) as Unique_EarlyInteraction,
@@ -507,5 +508,6 @@ select Month, B_Final_TechFlag, B_FMCSegment, E_Final_TechFlag, E_FMCSegment, B_
     B_FMCTYPE, E_FMCTYPE, First_Sales_Chnl_EOM, First_sales_CHNL_BOM, Last_Sales_CHNL_EOM, Last_Sales_CHNL_BOM , SALES_CHANNEL,sales_channel_so
 from FullTable_Adj
 WHERE ((Fixedchurntype != 'Fixed Voluntary Churner' and Fixedchurntype != 'Fixed Involuntary Churner') or  Fixedchurntype is null) and finalchurnflag !='Fixed Churner'
-Group by 1,2,3,4,5, B_FMCTYPE, E_FMCTYPE,First_Sales_Chnl_EOM, First_sales_CHNL_BOM, Last_Sales_CHNL_EOM, Last_Sales_CHNL_BOM, SALES_CHANNEL,sales_channel_so,B_FixedTenure,E_FixedTenure
+Group by 1,2,3,4,5, B_FMCTYPE, E_FMCTYPE,First_Sales_Chnl_EOM, First_sales_CHNL_BOM, Last_Sales_CHNL_EOM, Last_Sales_CHNL_BOM, SALES_CHANNEL,sales_channel_so,b_final_tenure
+e_final_tenure,B_FixedTenure,E_FixedTenure
 --Order by 1 desc, 2,3,4,5, B_FMCTYPE, E_FMCTYPE,First_Sales_Chnl_EOM, First_sales_CHNL_BOM, Last_Sales_CHNL_EOM, Last_Sales_CHNL_BOM, SALES_CHANNEL,sales_channel_so
