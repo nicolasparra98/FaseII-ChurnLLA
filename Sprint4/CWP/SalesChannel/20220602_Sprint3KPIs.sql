@@ -1,6 +1,6 @@
 WITH FMC_Table AS
 ( SELECT * FROM
-"lla_cco_int_stg"."cwp_sp3_basekpis_dashboardinput_dinamico_rj")
+"lla_cco_int_stg"."cwp_sp3_basekpis_dashboardinput_dinamico_rj_v3")
 
 /*SELECT fixedmonth, count(distinct fixedaccount) from FMC_TABLE
 WHERE  f_activeeom = 1
