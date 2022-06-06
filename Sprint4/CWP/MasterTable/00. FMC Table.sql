@@ -138,7 +138,7 @@ FROM FmcTypeFlags
 ,
 FullCustomerBaseFlags_Waterfall AS(
 SELECT f.*
-,CASE WHEN (FinalChurnFlag = 'Churner') OR (FinalChurnFlag = 'Fixed Churner' and B_FMCSegment = 'P1_Fixed' and E_FMCSegment is null) OR (FinalChurnFlag = 'Mobile Churner' and B_FMCSegment = 'P1_Mobile' and E_FMCSegment is null) then 'Total Churner'
+,CASE WHEN (FinalChurnFlag = 'Churner') OR (FinalChurnFlag = 'Fixed Churner' and B_FMCSegment = 'P1 Fixed' and E_FMCSegment is null) OR (FinalChurnFlag = 'Mobile Churner' and B_FMCSegment = 'P1 Mobile' and E_FMCSegment is null) then 'Total Churner'
 WHEN FinalChurnFlag = 'Non Churner' then null
 ELSE 'Partial Churner' end as Partial_Total_ChurnFlag
 ,CASE WHEN (RejoinerFlag='2. Fixed Rejoiner' OR RejoinerFlag='3. Mobile Rejoiner') AND E_FMCSegment IN('P2','P3','P4') THEN '1. FMC Rejoiner'
@@ -173,4 +173,6 @@ END AS E_Final_TechFlag
 FROM FmcSegmentFlags f
 )
 
-SELECT * from Fullcustomerbaseflags_waterfall
+SELECT distinct * from Fullcustomerbaseflags_waterfall
+
+
