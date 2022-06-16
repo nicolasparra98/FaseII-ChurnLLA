@@ -51,7 +51,7 @@ FROM Interactions_Count i
 ,Users_Tickets as (
 select distinct ACCOUNT_ID, interaction_id, INTERACTION_DATE
 FROM interactions_fields
-where interaction_purpose_descrip = 'TICKET' --AND interaction_status ='CLOSED'
+where interaction_purpose_descrip = 'TICKET'
 ) 
 ,Last_Ticket as(
 Select distinct account_id as last_account
@@ -139,19 +139,13 @@ as NumberTickets,OutlierRepair,UsersTruckrolls,Missedvisits
 from MissedVisits_Flag
 )
 --/*
-select distinct month
---,B_Final_TechFlag, B_FMCSegment, B_FMCType,E_Final_TechFlag, E_FMCSegment, E_FMCType,b_final_tenure,e_final_tenure,B_FixedTenure,E_FixedTenure
---,InteractionsTier
---,TicketsTier
---,finalchurnflag,fixedchurnflag,waterfall_flag
---,count(distinct finalaccount) as Total_Accounts, count(distinct fixedaccount) as Fixed_Accounts,count(distinct interactions) as UsersInteractions,count(distinct tickets) as UsersTickets
-, round(sum(NumberTickets),0) as NumberTickets
---,count(distinct OutlierRepair) as OutlierRepairs,count(distinct userstruckrolls) as UsersTruckrolls,count(distinct missedvisits) as MissedVisits
+select distinct month,B_Final_TechFlag, B_FMCSegment, B_FMCType,E_Final_TechFlag, E_FMCSegment, E_FMCType,b_final_tenure,e_final_tenure,B_FixedTenure,E_FixedTenure,InteractionsTier
+,TicketsTier,finalchurnflag,fixedchurnflag,waterfall_flag,count(distinct finalaccount) as Total_Accounts, count(distinct fixedaccount) as Fixed_Accounts,count(distinct interactions) as UsersInteractions,count(distinct tickets) as UsersTickets
+, round(sum(NumberTickets),0) as NumberTickets,count(distinct OutlierRepair) as OutlierRepairs,count(distinct userstruckrolls) as UsersTruckrolls,count(distinct missedvisits) as MissedVisits
 from final_fields
 --where month=date('2022-02-01')
 WHERE ((Fixedchurntype != 'Fixed Voluntary Churner' and Fixedchurntype != 'Fixed Involuntary Churner') or  Fixedchurntype is null) and finalchurnflag !='Fixed Churner'
 --and month=date('2022-02-01') and tickets is not null and e_fmcsegment is null
-group by 1--,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16
-order by 1--interactionstier 
---1,2--,3,4,5,6,7,8,9,10,11,12,13,14,15,16
+group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16
+order by 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16
 --*/
