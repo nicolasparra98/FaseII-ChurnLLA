@@ -45,7 +45,7 @@ where month=date('2022-05-01')
 group by 1,2,3,5
 order by 1,3,2,5
 )
-select distinct Month,Provincia,sum(home_passed),sum(active_users),sum(active_users)/sum(home_passed)
+select distinct Month,Provincia,sum(home_passed),sum(active_users),round(sum(cast(active_users as double))*100/sum(cast(home_passed as double)),2)
 from final_grouping
 group by 1,2
 order by 1,2
