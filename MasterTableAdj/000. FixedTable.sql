@@ -68,8 +68,6 @@ FROM lag_dna
 WHERE PD_MIX_CD<>'0P'AND act_cust_typ_nm = 'Residencial' 
 --AND date(load_dt) between (DATE('2022-03-01') + interval '1' MONTH - interval '1' DAY - interval '3' MONTH) AND  (DATE('2022-03-01') + interval '1' MONTH - interval '1' DAY + interval '3' MONTH)
 and date(dt) between (DATE('2022-03-01') + interval '1' MONTH - interval '1' DAY - interval '3' MONTH) AND  (DATE('2022-03-01') + interval '1' MONTH - interval '1' DAY + interval '3' MONTH)
---and act_acct_cd='309027270000'
---and act_acct_cd='313045530000'
 GROUP BY LOAD_DT,dt,2,3,FI_OUTST_AGE,6, 7,8, 9, 10, 11,12,13,14,15,PD_BB_PROD_CD,pd_tv_prod_cd,PD_VO_PROD_CD,pd_mix_nm,pd_mix_cd,exclude,inv_churn_flg
 )
 ,HardBundleFlag AS(
@@ -107,8 +105,6 @@ First_sales_chnl as  First_sales_chnl_bom, Last_sales_chnl as Last_sales_chnl_bo
      date_trunc('MONTH', DATE(f.dt)) + interval '1' MONTH - interval '1' day
     AND (CAST(FI_OUTST_AGE AS INTEGER)<=90 OR FI_OUTST_AGE IS NULL)
     and exclude<>1
-    --and act_acct_cd='313045530000'
-    --and fixedaccount='309027270000'
 )
 
 ,FixedActive_EOM AS(
@@ -136,7 +132,6 @@ First_sales_chnl as  First_sales_chnl_eom, Last_sales_chnl as Last_sales_chnl_eo
     WHERE DATE(f.dt) = date_trunc('MONTH', DATE(f.dt)) + interval '1' MONTH - interval '1' day
     AND (CAST(FI_OUTST_AGE AS INTEGER)<90 OR FI_OUTST_AGE IS NULL)
     and exclude<>1
-    --and fixedaccount='309027270000'
 )
 ,CustomerStatus AS(
   SELECT DISTINCT
@@ -175,7 +170,6 @@ FROM CustomerStatus a
   WHEN FixedMainMovement = '1.SameRGUs' AND (E_Fixed_MRC - B_Fixed_MRC) < 0 THEN '2. Down-spin'
   ELSE '3. No Spin' END AS FixedSpinMovement
   FROM MainMovementBase b
---where fixedaccount='313045530000'
 )
 
 -- ################ Voluntary Churn ###############################################
@@ -284,14 +278,12 @@ WHERE ChurnType IS NOT NULL AND PartialChurn=0
     FROM FixedUsefulFields 
     WHERE date(dt) = --date('2022-02-28')-- 
     date_trunc('MONTH', DATE(dt)) + interval '1' MONTH - interval '1' day
-    --and fixedaccount='309027270000'
     Group by 1,2
 )
 ,LastCustRecord as(
     SELECT  DATE_TRUNC('MONTH', DATE(dt)) AS MES, FixedAccount AS Account, max(date(dt)) as LastCustRecord,date_add('day',-1,max(date(dt))) as PrevLastCustRecord,date_add('day',-2,max(date(dt))) as PrevLastCustRecord2
     FROM FixedUsefulFields 
       --WHERE DATE(LOAD_dt) = date_trunc('MONTH', DATE(LOAD_dt)) + interval '1' MONTH - interval '1' day
-      --where fixedaccount='309027270000'
    Group by 1,2
    order by 1,2
 )
@@ -301,7 +293,6 @@ WHERE ChurnType IS NOT NULL AND PartialChurn=0
  INNER JOIN FIRSTCUSTRECORD  r ON r.account = t.FixedAccount
  WHERE CAST(fi_outst_age as INT) <= 90 
  and (date(t.dt) = r.FirstCustRecord or date(t.dt)=r.PrevFirstCustRecord)
- --and fixedaccount='309027270000'
  GROUP BY 1, 2, 3
 )
  ,OVERDUELASTDAY AS(
@@ -314,21 +305,6 @@ WHERE ChurnType IS NOT NULL AND PartialChurn=0
  and CAST(fi_outst_age AS INTEGER) >= 90
  GROUP BY 1, 2, 3, 4
  )
-
- /*        
-(next1_fi_outst_age = (90) + 1 and date_trunc('month',date(next1_dt) - interval '1' day) = date_trunc('month',date(dt))) or 
-        (next2_fi_outst_age = (90) + 2 and date_trunc('month',date(next2_dt) - interval '2' day) = date_trunc('month',date(dt))) or 
-        (next3_fi_outst_age = (90) + 3 and date_trunc('month',date(next3_dt) - interval '3' day) = date_trunc('month',date(dt))) or
-        (next4_fi_outst_age = (90) + 4 and date_trunc('month',date(next4_dt) - interval '4' day) = date_trunc('month',date(dt)))then 1 else 0 end as inv_churn_flg
- lag(fi_outst_age) over (partition by act_acct_cd order by dt desc) as next1_fi_outst_age,
-        lag(fi_outst_age,2) over (partition by act_acct_cd order by dt desc) as next2_fi_outst_age,
-        lag(fi_outst_age,3) over (partition by act_acct_cd order by dt desc) as next3_fi_outst_age,
-        lag(fi_outst_age,4) over (partition by act_acct_cd order by dt desc) as next4_fi_outst_age,
-        lag(dt) over (partition by act_acct_cd order by dt desc) as next1_dt,
-        lag(dt,2) over (partition by act_acct_cd order by dt desc) as next2_dt,
-        lag(dt,3) over (partition by act_acct_cd order by dt desc) as next3_dt,
-        lag(dt,4) over (partition by act_acct_cd order by dt desc) as next4_dt
-        */
  ,INVOLUNTARYNETCHURNERS AS(
  SELECT DISTINCT n.MES AS Month, n. account, l.ChurnTenureDays
  FROM NO_OVERDUE n INNER JOIN OVERDUELASTDAY l ON n.account = l.account and n.MES = l.MES
@@ -434,21 +410,6 @@ END AS FixedChurnSubtype
 ,household_id,FMCFlagFix,Fixed_PRMonth,Fixed_RejoinerMonth,gap
 FROM PrepaidChurnerFlag
 )
-,FMC_Table AS ( 
-SELECT * FROM "lla_cco_int_ana_prod"."cwp_fmc_churn_prod"
-where month=date(dt) and month=date('2022-02-01') and fixedchurntype='2. Fixed Involuntary Churner'
-)
-,invchurnp as(
-SELECT DISTINCT fixedmonth,fixedaccount
-FROM FinalChurnFlag_SO
-where fixedmonth=date('2022-02-01') and fixedchurntype='2. Fixed Involuntary Churner'
-)
---select *
---from fmc_table f left join invchurnp i on f.fixedaccount=i.fixedaccount and f.fixedmonth=i.fixedmonth
---/*
 select distinct *
---fixedmonth--,fixedchurntype,b_numrgus,fixedmainmovement,count(distinct fixedaccount)--,count(distinct fixedaccount)*b_numrgus
 FROM FinalChurnFlag_SO
---group by 1,2--,3
---order by 1,2--,3
---*/
+
