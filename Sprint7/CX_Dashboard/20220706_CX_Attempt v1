@@ -1,0 +1,76 @@
+with
+-------------------------------------Previoulsy Calculated KPIs-------------------------------------------------
+FMC_Table AS ( 
+SELECT *,'CWP' as Opco,'Panama' as Market,'Large' as MarketSize
+,'Fixed' as Product -- No lo se rick
+,'B2C' as Biz_Unit
+--Jamal miraba solo que no estuvieran el mes anterior
+--Gross Adds: rejoiners+gross adds e installs=gross adds o al reves??
+,case when waterfall_flag='Gross Adds' then finalaccount else null end as Gross_Adds
+,case when finalaccount is not null then finalaccount else null end as Active_Base
+FROM "lla_cco_int_ana_prod"."cwp_fmc_churn_prod"
+where month=date(dt)
+)
+,GrossAdds_Flag as(
+select distinct month,Opco,Market,MarketSize,Product,Biz_Unit
+,count(distinct Gross_Adds) as GrossAdds
+from fmc_table
+Group by 1,2,3,4,5,6
+)
+,ActiveBase_Flag as(
+select distinct month,Opco,Market,MarketSize,Product,Biz_Unit
+,count(distinct Active_Base) as Active_Base
+from fmc_table
+Group by 1,2,3,4,5,6
+)
+,Sprint3_KPIs as (
+select distinct month,sum(activebase) as activebase,sum(unique_sales) as unique_sales,sum(unique_softdx) as unique_softdx,sum(unique_neverpaid) as unique_neverpaid,sum(unique_longinstall) as unique_longinstall,sum(unique_earlyinteraction) as unique_earlyinteraction,sum(unique_earlyticket) as unique_earlyticket,sum(unique_billclaim) as unique_billclaim,sum(unique_mrcchange) as unique_mrcchange,sum(unique_mountingbill) as unique_mountingbill,sum(noplan) as noplan
+from "lla_cco_int_ana_prod"."cwp_operational_drivers_prod"
+where month=date(dt)
+group by 1
+)
+,S3_CX_KPIs as(
+select distinct month,round(cast(unique_mountingbill as double)/cast(unique_mrcchange as double),4) as Customers_w_MRC_Changes,round(cast(noplan as double)/cast(activebase as double),4) as Customers_w_Mounting_Bills,round(cast(unique_softdx as double)/cast(unique_sales as double),4) as New_Sales_to_Soft_Dx,round(cast(unique_longinstall as double)/cast(unique_sales as double),4) as breech_cases_install,round(cast(unique_earlyticket as double)/cast(unique_sales as double),4) as Early_Tech_Tix, round(cast(unique_earlyinteraction as double)/cast(unique_sales as double),4) as New_Customer_Callers
+from Sprint3_KPIs
+order by 1
+)
+,Sprint5_KPIs as(
+select distinct Month,case when InteractionsTier in('2','>3') then sum(usersinteractions) end as RepeatedCallers
+,sum(fixed_accounts) fixed_accounts,sum(outlierrepairs) as outlier_repairs,sum(numbertickets) as numbertickets
+from "lla_cco_int_stg"."cwp_operationaldrivers2_temp"
+group by 1,interactionstier
+order by 1
+)
+,S5_CX_KPIs as(
+select distinct month,round(cast(sum(repeatedcallers) as double)/cast(sum(fixed_accounts) as double),4) as Repeat_Callers,round(cast(sum(outlier_repairs) as double)/cast(sum(fixed_accounts) as double),4) as Breech_Cases_Repair,round(cast(sum(numbertickets) as double)/cast(sum(fixed_accounts) as double),4) as Tech_Tix_per_100_Acct
+from Sprint5_KPIs
+group by 1
+order by 1
+)
+--,kpi_name_flag as(
+select distinct * --Month,Opco,Market,MarketSize,Product,Biz_Unit
+--,count(distinct gross_adds) as gross_adds
+--,count(distinct active_base) as active_base
+,case when Gross_Adds is not null then 'Gross_Adds' 
+      when active_base is not null then 'Active_Base'
+else null end as kpi_name
+from grossadds_flag
+group by 1,2,3,4,5,6,9
+)
+,Groups_Flags as(
+select distinct Month,Opco,Market,MarketSize,Product,Biz_Unit,kpi_name
+,case when kpi_name IN('Gross_Adds','Active_Base') then 'contact_drivers' else null 
+end as facet
+,case when kpi_name IN('Gross_Adds') then 'buy' 
+      when kpi_name IN('Active_Base') then 'use'
+else null end as journey_waypoint
+,case when kpi_name='Gross_Adds' then sum(Gross_Adds) 
+      when kpi_name='Active_Base' then sum(active_base)
+else null end as KPI_Measure
+from kpi_name_flag
+group by 1,2,3,4,5,6,7
+)
+select distinct Month,Opco,Market,MarketSize,Product,Biz_Unit,Journey_Waypoint,Facet,KPI_Name,KPI_Measure
+from Groups_Flags
+where month=date('2022-05-01')
+order by 1,2,3,4,5,6,7,8,9,10
