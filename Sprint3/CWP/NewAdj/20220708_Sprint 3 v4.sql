@@ -502,7 +502,7 @@ FROM FullTable_KPIsFlags f LEFT JOIN SalesChannel_SO s ON f.fixedaccount=cast(s.
 )
 ------ RESULTS QUERY -----------------------
 select Month
---, B_Final_TechFlag, B_FMCSegment, E_Final_TechFlag, E_FMCSegment, b_final_tenure,e_final_tenure,B_FixedTenure,E_FixedTenure
+, B_Final_TechFlag, B_FMCSegment, E_Final_TechFlag, E_FMCSegment, b_final_tenure,e_final_tenure,B_FixedTenure,E_FixedTenure
 , count(distinct fixedaccount) as activebase, sum(monthsale_flag) as Sales, sum(STRAIGHT_SOFT_DX_FLAG) as Soft_Dx, sum (Never_Paid_Flag) as NeverPaid, sum(late_inst_flag) as Long_installs,sum(early_interaction_flag) as Early_Issues, sum(early_ticket_flag) as Early_ticket, count(distinct F_SalesFlag) as Unique_Sales, count(distinct F_SoftDxFlag) as Unique_SoftDx,
     count(distinct F_NeverPaidFlag) as Unique_NeverPaid,
     count(distinct F_LongInstallFlag) as Unique_LongInstall,
@@ -512,8 +512,8 @@ select Month
     count(distinct noplanchange) as NoPlan,
     count(distinct F_MRCChange) as Unique_MRCChange,
     count (distinct F_MountingBillFlag) as Unique_MountingBill
-    --,B_FMCTYPE, E_FMCTYPE, First_Sales_Chnl_EOM, First_sales_CHNL_BOM, Last_Sales_CHNL_EOM, Last_Sales_CHNL_BOM , SALES_CHANNEL,sales_channel_so
+    ,B_FMCTYPE, E_FMCTYPE, First_Sales_Chnl_EOM, First_sales_CHNL_BOM, Last_Sales_CHNL_EOM, Last_Sales_CHNL_BOM , SALES_CHANNEL,sales_channel_so
 from FullTable_Adj
 WHERE ((Fixedchurntype != 'Fixed Voluntary Churner' and Fixedchurntype != 'Fixed Involuntary Churner') or  Fixedchurntype is null) and finalchurnflag !='Fixed Churner'
-Group by 1--,2,3,4,5,6,7,8,9,B_FMCTYPE, E_FMCTYPE, First_Sales_Chnl_EOM, First_sales_CHNL_BOM, Last_Sales_CHNL_EOM, Last_Sales_CHNL_BOM , SALES_CHANNEL,sales_channel_so
+Group by 1,2,3,4,5,6,7,8,9,B_FMCTYPE, E_FMCTYPE, First_Sales_Chnl_EOM, First_sales_CHNL_BOM, Last_Sales_CHNL_EOM, Last_Sales_CHNL_BOM , SALES_CHANNEL,sales_channel_so
 order by 1
