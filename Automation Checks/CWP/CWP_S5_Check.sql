@@ -1,0 +1,4 @@
+SELECT  
+month,B_Final_TechFlag,B_FMCSegment,B_FMCType,E_Final_TechFlag,E_FMCSegment,E_FMCType,b_final_tenure,e_final_tenure,B_FixedTenure,E_FixedTenure,InteractionsTier,TicketsTier,finalchurnflag,fixedchurnflag,waterfall_flag,Total_Accounts,Fixed_Accounts,UsersInteractions,UsersTickets,NumberTickets,OutlierRepairs,UsersTruckrolls,MissedVisits
+FROM "lla_cco_int_ana_dev"."cwp_operational_drivers_5_dev" 
+where month=date(dt)
