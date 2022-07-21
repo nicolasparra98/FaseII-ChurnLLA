@@ -1,0 +1,3 @@
+SELECT Month,E_Final_TechFlag,E_FMCSegment,E_FMCType,E_Final_Tenure,B_Final_TechFlag,B_FMCSegment,B_FMCType,B_Final_Tenure,FinalChurnFlag,f_activebom,f_activeeom,FixedChurnType,FixedChurnFlag,fixedchurnsubtype,fixedmainmovement,Waterfall_Flag,Exclude,Exclude_All,Channel,Dx_Type,b_numrgus,TotalAccounts,FixedAccounts,Dx_Users,Dx_Attempt,RetentionCenter,Dx_RGUs,RetainedUsers,Dx_AttemptRGUs,RetainedRGUs
+FROM "lla_cco_int_ana_dev"."cwp_churn_equations_4_2_dev" 
+where month=date(dt)
