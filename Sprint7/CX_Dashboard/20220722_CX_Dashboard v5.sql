@@ -118,11 +118,24 @@ select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'contact_drivers' 
 select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'Contract_intensity' as facet,'support-tech' as journey_waypoint,'Repairs_per_1k_rgu' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den from fmc_table)
 --use
 ,highrisk as(
-select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'high_risk' as facet,'use' as journey_waypoint,'%_High_Tech_Call_Nodes_+6%monthly' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den from fmc_table)
+select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'high_risk' as facet,'use' as journey_waypoint,'%_High_Tech_Call_Nodes_+6%monthly' as kpi_name, null as kpi_meas, null as kpi_num,null as kpi_den from fmc_table)
 ,pnps as(
-select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'NPS_Detractorship' as facet,'use' as journey_waypoint,'pNPS' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den from fmc_table)
+select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'NPS_Detractorship' as facet,'use' as journey_waypoint,'pNPS' as kpi_name, null as kpi_meas, null as kpi_num,null as kpi_den from fmc_table)
 --Wanda Dashboard
-
+,billbill as(
+select distinct  month,Opco,Market,MarketSize,Product,Biz_Unit,'Contact_intensity' as facet,'pay' as journey_waypoint,'Billing Calls per Bill Variation' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den from fmc_table)
+,cccare as(
+select distinct  month,Opco,Market,MarketSize,Product,Biz_Unit,'Customer_time' as facet,'support-call' as journey_waypoint,'%CC_SL_Care' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den from fmc_table)
+,cctech as(
+select distinct  month,Opco,Market,MarketSize,Product,Biz_Unit,'Customer_time' as facet,'support-call' as journey_waypoint,'%CC_SL_Tech' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den from fmc_table)
+,chatbot as(
+select distinct  month,Opco,Market,MarketSize,Product,Biz_Unit,'digital_shift' as facet,'support-call' as journey_waypoint,'%Chatbot_containment_care' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den from fmc_table)
+,carecall as(
+select distinct  month,Opco,Market,MarketSize,Product,Biz_Unit,'Contact_intensity' as facet,'support-call' as journey_waypoint,'care_calls_per_1k_rgu' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den from fmc_table)
+,techcall as(
+select distinct  month,Opco,Market,MarketSize,Product,Biz_Unit,'Contact_intensity' as facet,'support-call' as journey_waypoint,'tech_calls_per_1k_rgu' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den from fmc_table)
+,chahtbottech as(
+select distinct  month,Opco,Market,MarketSize,Product,Biz_Unit,'digital_shift' as facet,'support-tech' as journey_waypoint,'%Chatbot_containment_Tech' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den from fmc_table)
 ---------------------------------Join Flags-----------------------------------------------------------------
 ,Join_DNA_KPIs as(
 select distinct *
@@ -140,7 +153,10 @@ from( select * from join_sprints_kpis union all select * from payments)
 union all select * from MTTI union all select * from tinstall union all select * from ftr_installs union all select * from installs union all select * from selfinstalls union all select * from installscalls union all select * from MTTBTR union all select * from tpay union all select * from ftr_billing union all select * from helpcare union all select * from frccare 
  union all select * from mttr  union all select * from helprepair union all select * from ftrrepair union all select * from repairs1k union all select * from highrisk union all select * from justrepairs union all select * from pnps)
 --Join Wanda Dashboard
-
+,Join_Wanda as(
+select distinct * from(select * from final_full_kpis union all select * from billbill union all select * from cccare union all select * from cctech union all select * from chatbot union all select * from carecall union all select * from techcall union all select * from chahtbottech)
+)
 select distinct Month,Opco,Market,MarketSize,Product,Biz_Unit,journey_waypoint,facet,kpi_name,kpi_meas,kpi_num,kpi_den,year(Month) as ref_year,month(month) as ref_mo,null as KPI_Sla, null as Kpi_delay_display
-from final_full_kpis
+from Join_Wanda
 where month=date('2022-05-01')
+
