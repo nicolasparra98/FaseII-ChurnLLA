@@ -36,7 +36,7 @@ from Sprint5_KPIs group by 1,2,3,4,5,6 order by 1,2,3,4,5,6
 )
 ------------------------------------New KPIs--------------------------------------------------------------
 ,payments as(
-select distinct month,opco,market,marketsize,product,biz_unit,'digital_shift' as facet,'pay' as journey_waypoint,'%digital_payments' as kpi_name,round(cast(sum(digital) as double)/cast(sum (pymt_cnt) as double),2) as kpi_meas,sum(digital) as kpi_num,sum(pymt_cnt) as kpi_den
+select distinct month,opco,market,marketsize,product,biz_unit,'digital_shift' as facet,'pay' as journey_waypoint,'%digital_payments' as kpi_name,round(cast(sum(digital) as double)/cast(sum (pymt_cnt) as double),2) as kpi_meas,sum(digital) as kpi_num,sum(pymt_cnt) as kpi_den, 'M-0' as Kpi_delay_display
 from( select date_trunc('month',date(dt)) as month,'CWP' as opco,'Panama' as market,'Large' as MarketSize,'Fixed' as Product,'B2C' as Biz_Unit,count(distinct(payment_doc_id)) as pymt_cnt
 ,case when digital_nondigital = 'Digital' then count(distinct(payment_doc_id)) end as digital
 FROM "db-stage-prod"."payments_cwp" where account_type = 'B2C' group by 1,2,3,4,5,6,digital_nondigital)
@@ -50,98 +50,98 @@ group by 1,2,3 order by 1,2,3) group by 1,2,3,4,5,6 order by 1,2,3,4,5,6)
 ---------------------------------All Flags KPIs------------------------------------------------------------
 -------Prev Calculated
 ,GrossAdds_Flag as(
-select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'contact_drivers' as facet,'buy' as journey_waypoint,'Gross_Adds' as kpi_name,count(distinct Gross_Adds) as kpi_meas,0 as kpi_num,0 as kpi_den from fmc_table Group by 1,2,3,4,5,6,7,8,9 )
+select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'contact_drivers' as facet,'buy' as journey_waypoint,'Gross_Adds' as kpi_name,count(distinct Gross_Adds) as kpi_meas,0 as kpi_num,0 as kpi_den, 'M-0' as Kpi_delay_display from fmc_table Group by 1,2,3,4,5,6,7,8,9 )
 ,ActiveBase_Flag1 as(
-select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'contact_drivers' as facet,'use' as journey_waypoint,'Active_Base' as kpi_name,count(distinct Active_Base) as kpi_meas,0 as kpi_num,0 as kpi_den from fmc_table Group by 1,2,3,4,5,6,7,8,9 )
+select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'contact_drivers' as facet,'use' as journey_waypoint,'Active_Base' as kpi_name,count(distinct Active_Base) as kpi_meas,0 as kpi_num,0 as kpi_den, 'M-0' as Kpi_delay_display from fmc_table Group by 1,2,3,4,5,6,7,8,9 )
 ,ActiveBase_Flag2 as(
-select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'contact_drivers' as facet,'support-call' as journey_waypoint,'Active_Base' as kpi_name,count(distinct Active_Base) as kpi_meas,0 as kpi_num,0 as kpi_den from fmc_table Group by 1,2,3,4,5,6,7,8,9 )
+select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'contact_drivers' as facet,'support-call' as journey_waypoint,'Active_Base' as kpi_name,count(distinct Active_Base) as kpi_meas,0 as kpi_num,0 as kpi_den, 'M-0' as Kpi_delay_display  from fmc_table Group by 1,2,3,4,5,6,7,8,9 )
 ,TechTickets_Flag as (
-select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'contact_intensity' as facet,'use' as journey_waypoint,'Tech_Tix_per_100_Acct' as kpi_name,round(Tech_Tix_per_100_Acct,2) as kpi_meas,tickets as kpi_num,fixed_acc as kpi_den from S5_CX_KPIs )
+select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'contact_intensity' as facet,'use' as journey_waypoint,'Tech_Tix_per_100_Acct' as kpi_name,round(Tech_Tix_per_100_Acct,2) as kpi_meas,tickets as kpi_num,fixed_acc as kpi_den, 'M-0' as Kpi_delay_display  from S5_CX_KPIs )
 ,MRCChanges_Flag as(
-select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'contact_drivers' as facet,'pay' as journey_waypoint,'%Customers_w_MRC_Changes_5%+_excl_plan' as kpi_name,round(Customers_w_MRC_Changes,2) as kpi_meas,mrc_change as kpi_num,noplan_customers as kpi_den from S3_CX_KPIs )
+select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'contact_drivers' as facet,'pay' as journey_waypoint,'%Customers_w_MRC_Changes_5%+_excl_plan' as kpi_name,round(Customers_w_MRC_Changes,2) as kpi_meas,mrc_change as kpi_num,noplan_customers as kpi_den, 'M-0' as Kpi_delay_display from S3_CX_KPIs )
 ,SalesSoftDx_Flag as(
-select distinct date_add('month',2,month) as month,Opco,Market,MarketSize,Product,Biz_Unit,'high_risk' as facet,'buy' as journey_waypoint,'%New_Sales_to_Soft_Dx' as kpi_name,round(New_Sales_to_Soft_Dx,2) as kpi_meas,unique_softdx as kpi_num,unique_sales as kpi_den from S3_CX_KPIs )
+select distinct date_add('month',2,month) as month,Opco,Market,MarketSize,Product,Biz_Unit,'high_risk' as facet,'buy' as journey_waypoint,'%New_Sales_to_Soft_Dx' as kpi_name,round(New_Sales_to_Soft_Dx,2) as kpi_meas,unique_softdx as kpi_num,unique_sales as kpi_den, 'M-2' as Kpi_delay_display from S3_CX_KPIs )
 ,EarlyIssues_Flag as(
-select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'high_risk' as facet,'buy' as journey_waypoint,'%New_Customer_Callers_2+calls_21days' as kpi_name,round(New_Customer_Callers,2) as kpi_meas,unique_earlyinteraction as kpi_num,unique_sales as kpi_den from S3_CX_KPIs )
+select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'high_risk' as facet,'buy' as journey_waypoint,'%New_Customer_Callers_2+calls_21days' as kpi_name,round(New_Customer_Callers,2) as kpi_meas,unique_earlyinteraction as kpi_num,unique_sales as kpi_den, 'M-0' as Kpi_delay_display from S3_CX_KPIs )
 ,LongInstall_Flag as(
-select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'high_risk' as facet,'get' as journey_waypoint,'%breech_cases_install_6+days' as kpi_name,round(breech_cases_install,2) as kpi_meas,unique_longinstall as kpi_num,unique_sales as kpi_den from S3_CX_KPIs )
+select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'high_risk' as facet,'get' as journey_waypoint,'%breech_cases_install_6+days' as kpi_name,round(breech_cases_install,2) as kpi_meas,unique_longinstall as kpi_num,unique_sales as kpi_den, 'M-0' as Kpi_delay_display from S3_CX_KPIs )
 ,EarlyTickets_Flag as(
-select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'high_risk' as facet,'get' as journey_waypoint,'%Early_Tech_Tix_-7weeks' as kpi_name,round(early_tech_tix,2) as kpi_meas,unique_earlyticket as kpi_num,unique_sales as kpi_den from S3_CX_KPIs)
+select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'high_risk' as facet,'get' as journey_waypoint,'%Early_Tech_Tix_-7weeks' as kpi_name,round(early_tech_tix,2) as kpi_meas,unique_earlyticket as kpi_num,unique_sales as kpi_den, 'M-0' as Kpi_delay_display from S3_CX_KPIs)
 ,RepeatedCall_Flag as (
-select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'high_risk' as facet,'support-call' as journey_waypoint,'%Repeat_Callers_2+calls' as kpi_name,round(Repeat_Callers,2) as kpi_meas,repeatcall as kpi_num,fixed_acc as kpi_den from S5_CX_KPIs )
+select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'high_risk' as facet,'support-call' as journey_waypoint,'%Repeat_Callers_2+calls' as kpi_name,round(Repeat_Callers,2) as kpi_meas,repeatcall as kpi_num,fixed_acc as kpi_den, 'M-0' as Kpi_delay_display from S5_CX_KPIs )
 ,OutlierRepair_Flag as (
-select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'high_risk' as facet,'support-tech' as journey_waypoint,'%breech_bases_repair_4+_days' as kpi_name,round(Breech_Cases_Repair,2) as kpi_meas,outlier_rep as kpi_num,fixed_acc as kpi_den from S5_CX_KPIs )
+select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'high_risk' as facet,'support-tech' as journey_waypoint,'%breech_bases_repair_4+_days' as kpi_name,round(Breech_Cases_Repair,2) as kpi_meas,outlier_rep as kpi_num,fixed_acc as kpi_den, 'M-0' as Kpi_delay_display from S5_CX_KPIs )
 ,MountingBill_Flag as(
-select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'high_risk' as facet,'pay' as journey_waypoint,'%Customers_w_Mounting_Bills' as kpi_name,round(Customers_w_Mounting_Bills,2) as kpi_meas,mountingbills as kpi_num,activebase as kpi_den from S3_CX_KPIs)
+select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'high_risk' as facet,'pay' as journey_waypoint,'%Customers_w_Mounting_Bills' as kpi_name,round(Customers_w_Mounting_Bills,2) as kpi_meas,mountingbills as kpi_num,activebase as kpi_den, 'M-0' as Kpi_delay_display from S3_CX_KPIs)
 --Service Delivery KPIs
 ,installs as(
-select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'contact_drivers' as facet,'get' as journey_waypoint,'Installs' as kpi_name, Install as kpi_meas, null as kpi_num,	null as kpi_den from service_delivery)
+select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'contact_drivers' as facet,'get' as journey_waypoint,'Installs' as kpi_name, Install as kpi_meas, null as kpi_num,	null as kpi_den, 'M-0' as Kpi_delay_display from service_delivery)
 ,MTTI as(
-select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'customer_time' as facet,'get' as journey_waypoint,'MTTI' as kpi_name, mtti as kpi_meas, null as kpi_num,	null as kpi_den from service_delivery)
+select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'customer_time' as facet,'get' as journey_waypoint,'MTTI' as kpi_name, mtti as kpi_meas, null as kpi_num,	null as kpi_den, 'M-0' as Kpi_delay_display from service_delivery)
 ,ftr_installs as(
-select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'effectiveness' as facet,'get' as journey_waypoint,'%FTR_installs' as kpi_name, ftr_install as kpi_meas, null as kpi_num,	null as kpi_den from service_delivery)
+select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'effectiveness' as facet,'get' as journey_waypoint,'%FTR_installs' as kpi_name, ftr_install as kpi_meas, null as kpi_num,	null as kpi_den, 'M-0' as Kpi_delay_display from service_delivery)
 ,justrepairs as(
-select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'contact_drivers' as facet,'support-tech' as journey_waypoint,'Repairs' as kpi_name, repairs as kpi_meas, null as kpi_num,	null as kpi_den from service_delivery)
+select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'contact_drivers' as facet,'support-tech' as journey_waypoint,'Repairs' as kpi_name, repairs as kpi_meas, null as kpi_num,	null as kpi_den, 'M-0' as Kpi_delay_display from service_delivery)
 ,mttr as(
-select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'customer_time' as facet,'support-tech' as journey_waypoint,'MTTR' as kpi_name, mttr as kpi_meas, null as kpi_num,	null as kpi_den from service_delivery)
+select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'customer_time' as facet,'support-tech' as journey_waypoint,'MTTR' as kpi_name, mttr as kpi_meas, null as kpi_num,	null as kpi_den, 'M-0' as Kpi_delay_display from service_delivery)
 ,ftrrepair as(
-select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'effectiveness' as facet,'support-tech' as journey_waypoint,'%FTR_Repair' as kpi_name, ftr_repair as kpi_meas, null as kpi_num,	null as kpi_den from service_delivery)
+select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'effectiveness' as facet,'support-tech' as journey_waypoint,'%FTR_Repair' as kpi_name, ftr_repair as kpi_meas, null as kpi_num,	null as kpi_den, 'M-0' as Kpi_delay_display from service_delivery)
 ,repairs1k as(
-select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'contact_intensity' as facet,'support-tech' as journey_waypoint,'Repairs_per_1k_rgu' as kpi_name, Repairs_1k_rgu as kpi_meas, null as kpi_num,	null as kpi_den from service_delivery)
+select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'contact_intensity' as facet,'support-tech' as journey_waypoint,'Repairs_per_1k_rgu' as kpi_name, Repairs_1k_rgu as kpi_meas, null as kpi_num,	null as kpi_den, 'M-0' as Kpi_delay_display from service_delivery)
 ---NotCalculated kpis
 --BUY
 ,more2calls as(
-select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'high_risk' as facet,'buy' as journey_waypoint,'%New_Customer_Callers_2+calls_21days' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den from fmc_table)
+select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'high_risk' as facet,'buy' as journey_waypoint,'%New_Customer_Callers_2+calls_21days' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den, 'M-0' as Kpi_delay_display from fmc_table)
 ,ecommerce as(
-select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'digital_shift' as facet,'buy' as journey_waypoint,'%eCommerce' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den from fmc_table)
+select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'digital_shift' as facet,'buy' as journey_waypoint,'%eCommerce' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den, 'M-0' as Kpi_delay_display from fmc_table)
 ,tBuy as(
-select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'NPS_Detractorship' as facet,'buy' as journey_waypoint,'tBuy' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den from fmc_table)
+select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'NPS_Detractorship' as facet,'buy' as journey_waypoint,'tBuy' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den, 'M-0' as Kpi_delay_display from fmc_table)
 ,mttb as(
-select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'customer_time' as facet,'buy' as journey_waypoint,'MTTB' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den from fmc_table)
+select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'customer_time' as facet,'buy' as journey_waypoint,'MTTB' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den, 'M-0' as Kpi_delay_display from fmc_table)
 ,Buyingcalls as(
-select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'contact_intensity' as facet,'buy' as journey_waypoint,'Buying_Calss/GA' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den from fmc_table)
+select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'contact_intensity' as facet,'buy' as journey_waypoint,'Buying_Calss/GA' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den, 'M-0' as Kpi_delay_display from fmc_table)
 --GET
 ,tinstall as(
-select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'NPS_Detractorship' as facet,'get' as journey_waypoint,'tInstall' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den from service_delivery)
+select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'NPS_Detractorship' as facet,'get' as journey_waypoint,'tInstall' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den, 'M-0' as Kpi_delay_display from service_delivery)
 ,selfinstalls as(
-select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'digital_shift' as facet,'get' as journey_waypoint,'%self_installs' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den from fmc_table)
+select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'digital_shift' as facet,'get' as journey_waypoint,'%self_installs' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den, 'M-0' as Kpi_delay_display from fmc_table)
 ,installscalls as(
-select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'contact_intensity' as facet,'get' as journey_waypoint,'Install_Calls/Installs' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den from fmc_table)
+select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'contact_intensity' as facet,'get' as journey_waypoint,'Install_Calls/Installs' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den, 'M-0' as Kpi_delay_display from fmc_table)
 --PAY
 ,MTTBTR as(
-select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'customer_time' as facet,'pay' as journey_waypoint,'MTTBTR' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den from fmc_table)
+select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'customer_time' as facet,'pay' as journey_waypoint,'MTTBTR' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den, 'M-0' as Kpi_delay_display from fmc_table)
 ,tpay as(
-select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'NPS_Detractorship' as facet,'pay' as journey_waypoint,'tpay' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den from fmc_table)
+select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'NPS_Detractorship' as facet,'pay' as journey_waypoint,'tpay' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den, 'M-0' as Kpi_delay_display from fmc_table)
 ,ftr_billing as(
-select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'effectiveness' as facet,'pay' as journey_waypoint,'%FTR_Billing' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den from fmc_table)
+select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'effectiveness' as facet,'pay' as journey_waypoint,'%FTR_Billing' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den, 'M-0' as Kpi_delay_display from fmc_table)
 --Support-call
 ,helpcare as(
-select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'NPS_Detractorship' as facet,'support-call' as journey_waypoint,'tHelp_Care' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den from fmc_table)
+select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'NPS_Detractorship' as facet,'support-call' as journey_waypoint,'tHelp_Care' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den, 'M-0' as Kpi_delay_display from fmc_table)
 ,frccare as(
-select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'effectiveness' as facet,'support-call' as journey_waypoint,'%FRC_Care' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den from fmc_table)
+select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'effectiveness' as facet,'support-call' as journey_waypoint,'%FRC_Care' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den, 'M-0' as Kpi_delay_display from fmc_table)
 --support-Tech
 ,helprepair as(
-select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'NPS_Detractorship' as facet,'support-tech' as journey_waypoint,'tHelp_repair' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den from fmc_table)
+select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'NPS_Detractorship' as facet,'support-tech' as journey_waypoint,'tHelp_repair' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den, 'M-0' as Kpi_delay_display from fmc_table)
 --use
 ,highrisk as(
-select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'high_risk' as facet,'use' as journey_waypoint,'%_High_Tech_Call_Nodes_+6%monthly' as kpi_name, null as kpi_meas, null as kpi_num,null as kpi_den from fmc_table)
+select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'high_risk' as facet,'use' as journey_waypoint,'%_High_Tech_Call_Nodes_+6%monthly' as kpi_name, null as kpi_meas, null as kpi_num,null as kpi_den, 'M-0' as Kpi_delay_display from fmc_table)
 ,pnps as(
-select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'NPS_Detractorship' as facet,'use' as journey_waypoint,'pNPS' as kpi_name, null as kpi_meas, null as kpi_num,null as kpi_den from fmc_table)
+select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'NPS_Detractorship' as facet,'use' as journey_waypoint,'pNPS' as kpi_name, null as kpi_meas, null as kpi_num,null as kpi_den, 'M-0' as Kpi_delay_display from fmc_table)
 --Wanda Dashboard
 ,billbill as(
-select distinct  month,Opco,Market,MarketSize,Product,Biz_Unit,'contact_intensity' as facet,'pay' as journey_waypoint,'Billing Calls per Bill Variation' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den from fmc_table)
+select distinct  month,Opco,Market,MarketSize,Product,Biz_Unit,'contact_intensity' as facet,'pay' as journey_waypoint,'Billing Calls per Bill Variation' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den, 'M-0' as Kpi_delay_display from fmc_table)
 ,cccare as(
-select distinct  month,Opco,Market,MarketSize,Product,Biz_Unit,'customer_time' as facet,'support-call' as journey_waypoint,'%CC_SL_Care' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den from fmc_table)
+select distinct  month,Opco,Market,MarketSize,Product,Biz_Unit,'customer_time' as facet,'support-call' as journey_waypoint,'%CC_SL_Care' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den, 'M-0' as Kpi_delay_display from fmc_table)
 ,cctech as(
-select distinct  month,Opco,Market,MarketSize,Product,Biz_Unit,'customer_time' as facet,'support-call' as journey_waypoint,'%CC_SL_Tech' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den from fmc_table)
+select distinct  month,Opco,Market,MarketSize,Product,Biz_Unit,'customer_time' as facet,'support-call' as journey_waypoint,'%CC_SL_Tech' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den, 'M-0' as Kpi_delay_display from fmc_table)
 ,chatbot as(
-select distinct  month,Opco,Market,MarketSize,Product,Biz_Unit,'digital_shift' as facet,'support-call' as journey_waypoint,'%Chatbot_containment_care' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den from fmc_table)
+select distinct  month,Opco,Market,MarketSize,Product,Biz_Unit,'digital_shift' as facet,'support-call' as journey_waypoint,'%Chatbot_containment_care' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den, 'M-0' as Kpi_delay_display from fmc_table)
 ,carecall as(
-select distinct  month,Opco,Market,MarketSize,Product,Biz_Unit,'contact_intensity' as facet,'support-call' as journey_waypoint,'care_calls_per_1k_rgu' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den from fmc_table)
+select distinct  month,Opco,Market,MarketSize,Product,Biz_Unit,'contact_intensity' as facet,'support-call' as journey_waypoint,'care_calls_per_1k_rgu' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den, 'M-0' as Kpi_delay_display from fmc_table)
 ,techcall as(
-select distinct  month,Opco,Market,MarketSize,Product,Biz_Unit,'contact_intensity' as facet,'support-call' as journey_waypoint,'tech_calls_per_1k_rgu' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den from fmc_table)
+select distinct  month,Opco,Market,MarketSize,Product,Biz_Unit,'contact_intensity' as facet,'support-call' as journey_waypoint,'tech_calls_per_1k_rgu' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den, 'M-0' as Kpi_delay_display from fmc_table)
 ,chahtbottech as(
-select distinct  month,Opco,Market,MarketSize,Product,Biz_Unit,'digital_shift' as facet,'support-tech' as journey_waypoint,'%Chatbot_containment_Tech' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den from fmc_table)
+select distinct  month,Opco,Market,MarketSize,Product,Biz_Unit,'digital_shift' as facet,'support-tech' as journey_waypoint,'%Chatbot_containment_Tech' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den, 'M-0' as Kpi_delay_display from fmc_table)
 ---------------------------------Join Flags-----------------------------------------------------------------
 ,Join_DNA_KPIs as(
 select distinct *
@@ -162,7 +162,6 @@ union all select * from MTTI union all select * from tinstall union all select *
 ,Join_Wanda as(
 select distinct * from(select * from final_full_kpis union all select * from billbill union all select * from cccare union all select * from cctech union all select * from chatbot union all select * from carecall union all select * from techcall union all select * from chahtbottech)
 )
-
-select distinct Month,Opco,Market,MarketSize,Product,Biz_Unit,journey_waypoint,facet,kpi_name,kpi_meas,kpi_num,kpi_den,year(Month) as ref_year,month(month) as ref_mo,null as KPI_Sla, null as Kpi_delay_display
+select distinct Month,Opco,Market,MarketSize,Product,Biz_Unit,journey_waypoint,facet,kpi_name,kpi_meas,kpi_num,kpi_den,null as KPI_Sla, kpi_delay_display,year(Month) as ref_year,month(month) as ref_mo
 from Join_Wanda
-where month=date('2022-05-01')
+--where month=date('2022-05-01')
