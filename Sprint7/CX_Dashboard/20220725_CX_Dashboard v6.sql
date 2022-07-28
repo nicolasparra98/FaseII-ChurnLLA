@@ -142,6 +142,8 @@ select distinct  month,Opco,Market,MarketSize,Product,Biz_Unit,'contact_intensit
 select distinct  month,Opco,Market,MarketSize,Product,Biz_Unit,'contact_intensity' as facet,'support-call' as journey_waypoint,'tech_calls_per_1k_rgu' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den, 'M-0' as Kpi_delay_display from fmc_table)
 ,chahtbottech as(
 select distinct  month,Opco,Market,MarketSize,Product,Biz_Unit,'digital_shift' as facet,'support-tech' as journey_waypoint,'%Chatbot_containment_Tech' as kpi_name, null as kpi_meas, null as kpi_num,	null as kpi_den, 'M-0' as Kpi_delay_display from fmc_table)
+,rnps as(
+select distinct  month,Opco,Market,MarketSize,Product,Biz_Unit,'NPS' as facet,'relationship' as journey_waypoint,'rNPS' as kpi_name, null as kpi_meas, null as kpi_num,null as kpi_den, 'M-0' as Kpi_delay_display from fmc_table)
 ---------------------------------Join Flags-----------------------------------------------------------------
 ,Join_DNA_KPIs as(
 select distinct *
@@ -157,7 +159,7 @@ from( select * from join_sprints_kpis union all select * from payments)
 )
 ,final_full_kpis as (select * from Join_New_KPIs union all select * from more2calls union all select * from mttb union all select * from Buyingcalls union all select * from tbuy union all select * from ecommerce 
 union all select * from MTTI union all select * from tinstall union all select * from ftr_installs union all select * from installs union all select * from selfinstalls union all select * from installscalls union all select * from MTTBTR union all select * from tpay union all select * from ftr_billing union all select * from helpcare union all select * from frccare 
- union all select * from mttr  union all select * from helprepair union all select * from ftrrepair union all select * from repairs1k union all select * from highrisk union all select * from justrepairs union all select * from pnps)
+ union all select * from mttr  union all select * from helprepair union all select * from ftrrepair union all select * from repairs1k union all select * from highrisk union all select * from justrepairs union all select * from pnps union all select * from rnps)
 --Join Wanda Dashboard
 ,Join_Wanda as(
 select distinct * from(select * from final_full_kpis union all select * from billbill union all select * from cccare union all select * from cctech union all select * from chatbot union all select * from carecall union all select * from techcall union all select * from chahtbottech)
