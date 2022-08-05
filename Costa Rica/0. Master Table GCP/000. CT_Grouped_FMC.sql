@@ -35,13 +35,22 @@ Month,Final_BOM_ActiveFlag,Final_EOM_ActiveFlag,B_FMC_Status,E_FMC_Status,Fixed_
 ,count(distinct fixed_account)/rep_fixed as Fixed_Account
 ,count(distinct mobile_account)/rep_mobile as Mobile_Account
 --Arreglar RGUs (que no hayan repetidos)
-,sum(cast(round(B_VO_MRC,0) as int)) as B_VO_MRC,sum(cast(round(B_BB_MRC,0) as int)) as B_BB_MRC,sum(cast(round(B_TV_MRC,0) as int)) as B_TV_MRC,sum(cast(round(B_AVG_MRC,0) as int)) as B_AVG_MRC,sum(cast(round(B_BILL_AMT,0) as int)) as B_BILL_AMT,sum(cast(round(E_VO_MRC,0) as int)) as E_VO_MRC,sum(cast(round(E_BB_MRC,0) as int)) as E_BB_MRC,sum(cast(round(E_TV_MRC,0) as int)) as E_TV_MRC,sum(cast(round(E_AVG_MRC,0) as int)) as E_AVG_MRC,sum(cast(round(E_BILL_AMT,0) as int)) as E_BILL_AMT,avg(cast(round(DIF_TOTAL_RGU,0) as int)) as DIF_TOTAL_RGU,avg(cast(round(mobile_mrc_diff,0) as int)) as Mobile_MRC_Diff,sum(FixedCount) as FixedCount,sum(cast(round(TOTAL_B_MRC,0) as int)) as TOTAL_B_MRC,sum(cast(round(TOTAL_E_MRC,0) as int)) as TOTAL_E_MRC,avg(cast(round(MRC_Change,0) as int)) as MRC_Change
+,sum(cast(round(B_VO_MRC,0) as int)) as B_VO_MRC
+,sum(cast(round(B_BB_MRC,0) as int)) as B_BB_MRC
+,sum(cast(round(B_TV_MRC,0) as int)) as B_TV_MRC
+,sum(cast(round(B_AVG_MRC,0) as int)) as B_AVG_MRC
+,sum(cast(round(B_BILL_AMT,0) as int)) as B_BILL_AMT,sum(cast(round(E_VO_MRC,0) as int)) as E_VO_MRC,sum(cast(round(E_BB_MRC,0) as int)) as E_BB_MRC,sum(cast(round(E_TV_MRC,0) as int)) as E_TV_MRC,sum(cast(round(E_AVG_MRC,0) as int)) as E_AVG_MRC,sum(cast(round(E_BILL_AMT,0) as int)) as E_BILL_AMT,avg(cast(round(DIF_TOTAL_RGU,0) as int)) as DIF_TOTAL_RGU,avg(cast(round(mobile_mrc_diff,0) as int)) as Mobile_MRC_Diff,sum(FixedCount) as FixedCount,sum(cast(round(TOTAL_B_MRC,0) as int)) as TOTAL_B_MRC,sum(cast(round(TOTAL_E_MRC,0) as int)) as TOTAL_E_MRC,avg(cast(round(MRC_Change,0) as int)) as MRC_Change
 
 from fmc_adj
 group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108
 )
-select distinct month,cast(round(sum(final_account),0) as int) as final,cast(round(sum(fixed_account),0) as int) as fixed,cast(round(sum(mobile_account),0) as int) as mobile
+select distinct month,sum(final) as final_accounts,sum(final_rgus) as final_rgus,sum(fixed) as fixed_accounts,sum(rgus_fixed) as fixed_rgus
+from
+(select distinct month,B_NumRGUs,E_NumRGUs,B_TotalRGUs,E_TotalRGUs,B_MobileRGUs,E_MobileRGUs,cast(round(sum(final_account),0) as int) as final,cast(round(sum(fixed_account),0) as int) as fixed,cast(round(sum(mobile_account),0) as int) as mobile,e_numrgus*cast(round(sum(fixed_account),0) as int) as rgus_fixed,E_TotalRGUs*cast(round(sum(final_account),0) as int) as final_rgus
 from prueba
 where Final_BOM_ActiveFlag=1
-group by 1--,2
-order by 1--,2
+group by 1,2,3,4,5,6,7
+order by 1,2,3,4,5)
+where month>="2022-01-01"
+group by 1 order by 1
+
