@@ -115,7 +115,7 @@ select * from join_nps union all select * from billbill union all select * from 
 select * from join_wanda union all select * from highrisk union all select * from payments union all select * from ecommerce union all select * from frccare ftr_billing union all select * from installscalls union all select * from MTTBTR union all select * from selfinstalls union all select * from  mttb union all select * from Buyingcalls
 )
 
-select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,facet,journey_waypoint,kpi_name,kpi_meas,kpi_num,kpi_den,Kpi_delay_display,Network
+select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,facet,journey_waypoint,kpi_name,kpi_meas,kpi_num,kpi_den,null as kpi_sla,Kpi_delay_display,null as kpi_disclaimer_display,null as kpi_disclaimer_meas,Network,year(Month) as ref_year,month(month) as ref_mo,null as kpi_sla_below_threshold,null as kpi_sla_middling_threshold,null as kpi_sla_above_threshold,null as kpi_sla_far_below_threshold,null as kpi_sla_far_above_threshold
 --facet,journey_waypoint,kpi_name
 from join_others
 --order by 1,2,3
