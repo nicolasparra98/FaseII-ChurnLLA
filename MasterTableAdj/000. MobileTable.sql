@@ -2,7 +2,7 @@ WITH
 Convergente AS(
 SELECT DISTINCT *,DATE_TRUNC('MONTH', DATE_PARSE(CAST(Date AS VARCHAR(10)), '%Y%m%d')) as Mes
 
-FROM "lla_cco_int_ext"."cwp_con_ext_fmc" 
+FROM "lla_cco_int_ext_prod"."cwp_con_ext_fmc"  
 
 WHERE telefonia='Pospago' AND "unidad de negocio"='1. B2C' 
  AND DATE_TRUNC('MONTH', DATE_PARSE(CAST(Date AS VARCHAR(10)), '%Y%m%d'))=DATE('2022-02-01') or DATE_TRUNC('MONTH', DATE_PARSE(CAST(Date AS VARCHAR(10)), '%Y%m%d'))=DATE('2022-01-01')
