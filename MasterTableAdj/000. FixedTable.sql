@@ -1,9 +1,7 @@
-
---CREATE TABLE IF NOT EXISTS "lla_cco_int_stg"."cwp_fix_stg_dashboardinput_dinamico_PruebaDt" AS
 WITH
 Convergente AS(
 SELECT DISTINCT *,DATE_TRUNC('MONTH', DATE_PARSE(CAST(Date AS VARCHAR(10)), '%Y%m%d')) as Mes
-FROM "lla_cco_int_ext"."cwp_con_ext_fmc"
+FROM "lla_cco_int_ext_prod"."cwp_con_ext_fmc"
 WHERE telefonia='Pospago' AND "unidad de negocio"='1. B2C'
  AND DATE_TRUNC('MONTH', DATE_PARSE(CAST(Date AS VARCHAR(10)), '%Y%m%d'))=DATE('2022-03-01') or DATE_TRUNC('MONTH', DATE_PARSE(CAST(Date AS VARCHAR(10)), '%Y%m%d'))=DATE('2022-02-01')
 )
@@ -186,7 +184,7 @@ date_trunc('Month', date(completed_date)) as month,date(completed_date) as EndDa
 ELSE NULL END AS DxType
 ,account_id
 ,lob_vo_count,lob_bb_count,lob_tv_count
-from "db-analytics-prod"."so_hdr_cwp" 
+from "db-stage-dev"."so_hdr_cwp" 
 where order_type = 'DEACTIVATION' AND ACCOUNT_TYPE='R' AND ORDER_STATUS='COMPLETED'
 )
 ,RGUsFlag_SO AS(
