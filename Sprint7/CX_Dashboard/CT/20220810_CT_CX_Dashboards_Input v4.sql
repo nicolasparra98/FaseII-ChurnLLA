@@ -217,7 +217,7 @@ round(Customers_w_MRC_Changes,4) as kpi_meas,mrc_change as kpi_num,noplan_custom
 select distinct  month,'CT' as Opco, 'Costa_Rica' as Market,'Large' as MarketSize,'Fixed' as Product,'B2C' as Biz_Unit,'high_risk' as facet,'pay' as journey_waypoint,'Customers_w_Mounting_Bills' as kpi_name,MountingBills as kpi_meas,unique_mountingbills as kpi_num,activebase as kpi_den,null as KPI_Sla,'M-0' as Kpi_delay_display,'OVERALL' as Network from S3_CX_KPIs
 )
 ,MountingBill_Network as(
-select distinct  month,'CT' as Opco, 'Costa_Rica' as Market,'Large' as MarketSize,'Fixed' as Product,'B2C' as Biz_Unit,'high_risk' as facet,'pay' as journey_waypoint,'Customers_w_Mounting_Bills' as kpi_name,MountingBills as kpi_meas,null as kpi_num,unique_mountingbills as kpi_den,activebase as KPI_Sla,'M-0' as Kpi_delay_display,tech as Network from S3_CX_KPIs_Network)
+select distinct  month,'CT' as Opco, 'Costa_Rica' as Market,'Large' as MarketSize,'Fixed' as Product,'B2C' as Biz_Unit,'high_risk' as facet,'pay' as journey_waypoint,'Customers_w_Mounting_Bills' as kpi_name,MountingBills as kpi_meas,unique_mountingbills as kpi_num,activebase as kpi_den,null as KPI_Sla,'M-0' as Kpi_delay_display,tech as Network from S3_CX_KPIs_Network)
 
 ,installs as(
 select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'contact_drivers' as facet,'get' as journey_waypoint,'Installs' as kpi_name, Install as kpi_meas, null as kpi_num,	null as kpi_den,null as KPI_Sla,'M-0' as Kpi_delay_display, Network from service_delivery)
