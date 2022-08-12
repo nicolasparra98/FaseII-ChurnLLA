@@ -104,7 +104,8 @@ From(
   Select Distinct Date_Trunc(End_Week_Date,Month) as Month,Network,End_Week_Date,sum(Total_Subscribers) as Total_Users,sum(Assisted_Installations) as Installations,sum(mtti) as MTTI, 
   sum(Assisted_Installations)*sum(mtti) as Inst_MTTI,sum(truck_rolls) as Repairs,sum(mttr) as MTTR,sum(truck_rolls)*sum(mttr) as Rep_MTTR,sum(scr) as SCR,(100-sum(i_elf_28days)) as
   FTR_Install,(100-sum(r_elf_28days)) as FTR_Repair,(100-sum(i_elf_28days))*sum(Assisted_Installations) as FTR_Install_M,(100-sum(r_elf_28days))*sum(truck_rolls) as FTR_Repair_M
-  from `gcp-bia-tmps-vtr-dev-01.gcp_temp_cr_dev_01.20220725_Service_Delivery_KPIResults`
+  from `gcp-bia-tmps-vtr-dev-01.lla_temp_dna_tables.20220812_Service_Delivery_KPIResults_July`
+  --`gcp-bia-tmps-vtr-dev-01.gcp_temp_cr_dev_01.20220725_Service_Delivery_KPIResults`
   where market='Costa Rica' --and network='OVERALL'
   group by 1,2,3
   order by 1,2,3) group by 1,2,3,4,5,6,7 order by 1,2,3,4,5,6,7
