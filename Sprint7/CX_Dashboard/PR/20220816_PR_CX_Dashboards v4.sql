@@ -110,7 +110,7 @@ select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,'contact_intensity
 select distinct  month,Opco,Market,MarketSize,Product,Biz_Unit,'contact_intensity' as facet,'pay' as journey_waypoint,'Billing Calls per Bill Variation' as kpi_name,kpi_meas,kpi_num,kpi_den,Kpi_delay_display,Network from fmc_table)
 -----------------------------------------join--------------------------------------
 ,join_churn as (
-select * from GrossAdds_Flag union all select * from ActiveBase_Flag1 union all select * from ActiveBase_Flag2 union all select * from TechTickets_Flag union all select * from MRCChanges_Flag union all select * from SalesSoftDx_Flag union all select * from EarlyIssues_Flag union all select * from LongInstall_Flag union all select * from EarlyTickets_Flag union all select * from RepeatedCall_Flag union all select * from MountingBill_Flag)
+select * from GrossAdds_Flag union all select * from ActiveBase_Flag1 union all select * from ActiveBase_Flag2 union all select * from TechTickets_Flag union all select * from MRCChanges_Flag union all select * from SalesSoftDx_Flag union all select * from EarlyIssues_Flag union all select * from LongInstall_Flag union all select * from EarlyTickets_Flag union all select * from RepeatedCall_Flag union all select * from OutlierRepair_Flag union all select * from MountingBill_Flag)
 ,join_service_delivery as(
 select * from join_churn union all select * from installs union all select * from MTTI union all select * from ftr_installs union all select * from justrepairs union all select * from mttr union all select * from ftrrepair union all select * from repairs1k)
 ,join_nps as(
@@ -118,11 +118,11 @@ select * from join_service_delivery union all select * from tBuy union all selec
 ,join_wanda as(
 select * from join_nps union all select * from billbill union all select * from cccare union all select * from cctech union all select * from chatbot union all select * from carecall union all select * from techcall union all select * from chahtbottech)
 ,join_others as(
-select *,null as kpi_sla from(select * from join_wanda union all select * from highrisk union all select * from payments union all select * from frccare ftr_billing union all select * from installscalls union all select * from MTTBTR union all select * from selfinstalls union all select * from  mttb union all select * from Buyingcalls)
+select *,null as kpi_sla from(select * from join_wanda union all select * from highrisk union all select * from payments union all select * from frccare union all select * from ftr_billing union all select * from installscalls union all select * from MTTBTR union all select * from selfinstalls union all select * from  mttb union all select * from Buyingcalls)
 union all select * from ecommerce
 )
-select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,facet,journey_waypoint,kpi_name,kpi_meas,kpi_num,kpi_den, kpi_sla,Kpi_delay_display,null as kpi_disclaimer_display,null as kpi_disclaimer_meas,Network,year(Month) as ref_year,month(month) as ref_mo,null as kpi_sla_below_threshold,null as kpi_sla_middling_threshold,null as kpi_sla_above_threshold,null as kpi_sla_far_below_threshold,null as kpi_sla_far_above_threshold
+select distinct month,Opco,Market,MarketSize,Product,Biz_Unit,journey_waypoint,facet,kpi_name,kpi_meas,kpi_num,kpi_den, kpi_sla,Kpi_delay_display,null as kpi_disclaimer_display,null as kpi_disclaimer_meas,Network,year(Month) as ref_year,month(month) as ref_mo,null as kpi_sla_below_threshold,null as kpi_sla_middling_threshold,null as kpi_sla_above_threshold,null as kpi_sla_far_below_threshold,null as kpi_sla_far_above_threshold
 --facet,journey_waypoint,kpi_name
 from join_others
 where month>=date('2022-01-01')
---order by 1,2,3
+order by 1,kpi_name
