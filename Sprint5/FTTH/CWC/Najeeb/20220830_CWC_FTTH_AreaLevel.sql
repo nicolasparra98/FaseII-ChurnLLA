@@ -24,19 +24,22 @@ select *
 from fmc_table f left join USEFULFIELDS_FTTH n  on fixed_account = act_acct_cd and f.month = n.month_dna
 )
 ,Najeeb_file as(
-SELECT distinct
-date(date_parse(cast(dt as varchar),'%Y%m%d')) as Month
-,"area code" as area_code
-,trim("Equipment Name") as eq_name
+select distinct Month,area_code,Cohort_Month,sum(serv_hp) as home_passed
+from(select Month,area_code,first_value(RFS_Date) over(partition by area_code,month order by RFS_Date) as Cohort_Month,serv_hp
+from (SELECT distinct date(date_parse(cast(dt as varchar),'%Y%m%d')) as Month,"area code" as area_code
+,date(date_parse(cast("RFS Date" as varchar),'%Y%m%d')) as RFS_Date,"serviceable_hhp" as serv_hp
+--,trim("Equipment Name") as eq_name
 --,"unique key" as unique_key,parish
-,sum("serviceable_hhp") as home_passed
+--,sum("serviceable_hhp") as home_passed
 --,working
 FROM "lla_cco_int_san"."cwc_ext_ftth_final"
+))
 --"lla_cco_int_san"."cwc_ext_ftth_add"
-group by 1,2,3 order by 1,2,3
+group by 1,2,3 
+order by 1,2,3
 )
-select distinct n.month,area_code,home_passed,count(distinct act_acct_cd) as users,round(cast(count(distinct act_acct_cd) as double)/cast(home_passed as double),2) as P
+select distinct n.month,Cohort_Month,area_code,home_passed as home_passed,count(distinct act_acct_cd) as users,round(cast(count(distinct act_acct_cd) as double)/cast(home_passed as double),2) as P
 from fmc_nodes_join u right join Najeeb_file n on --u.nr_tel_center=n.eq_name and 
 area_adj=area_code and u.month=n.month
-group by 1,2,3--,4
-order by 1,2,3--,4
+group by 1,2,3,4
+order by 1,3,2,4
