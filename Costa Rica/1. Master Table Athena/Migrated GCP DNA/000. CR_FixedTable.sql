@@ -11,7 +11,7 @@ SELECT DISTINCT DATE_TRUNC('month',date(FECHA_EXTRACCION)) AS Month,date(FECHA_E
         WHEN PD_VO_PROD_ID IS NOT NULL and pd_vo_prod_id<>'' AND PD_BB_PROD_ID IS NOT NULL and pd_bb_prod_id<>'' AND (PD_TV_PROD_ID IS NULL or pd_tv_prod_id='') THEN '2P'
 ELSE '1P' END AS MIX
 from "lla_cco_int_san"."dna_fixed_historic_cr" 
-where date(fecha_extraccion) between (DATE('2022-06-01') + interval '1' MONTH - interval '1' DAY - interval '2' MONTH) AND  (DATE('2022-06-01') + interval '1' MONTH - interval '1' DAY)
+where date(fecha_extraccion) between (DATE('2022-05-01') + interval '1' MONTH - interval '2' MONTH) AND  (DATE('2022-05-01') + interval '1' MONTH)
 )
 ,CustomerBase_BOM AS(
 SELECT *
@@ -93,8 +93,8 @@ WHERE FECHA_EXTRACCION=DATE_TRUNC('month',FECHA_EXTRACCION) )
        WHEN (B_NumRGUs IS NULL AND E_NumRGUs > 0 AND DATE_TRUNC('month',E_ACT_ACCT_SIGN_DT) = Fixed_Month) THEN 'New Customer'
        WHEN ActiveBOM = 1 AND ActiveEOM = 0 THEN 'Loss'
  END AS MainMovement
- ,CASE WHEN ActiveBOM = 0 AND ActiveEOM = 1 AND DATE_TRUNC('month',E_MinInst) = date('2022-06-01') THEN 'June Gross-Ads'
-       WHEN ActiveBOM = 0 AND ActiveEOM = 1 AND DATE_TRUNC('month',E_MinInst) <> date('2022-06-01') THEN 'ComeBackToLife/Rejoiners Gross-Ads'
+ ,CASE WHEN ActiveBOM = 0 AND ActiveEOM = 1 AND DATE_TRUNC('month',E_MinInst) = date('2022-05-01') THEN 'June Gross-Ads'
+       WHEN ActiveBOM = 0 AND ActiveEOM = 1 AND DATE_TRUNC('month',E_MinInst) <> date('2022-05-01') THEN 'ComeBackToLife/Rejoiners Gross-Ads'
  ELSE NULL END AS GainMovement
  ,coalesce(E_RGU_BB - B_RGU_BB,0) as DIF_RGU_BB ,coalesce(E_RGU_TV - B_RGU_TV,0) as DIF_RGU_TV ,coalesce(E_RGU_VO - B_RGU_VO,0) as DIF_RGU_VO,(E_NumRGUs - B_NumRGUs) as DIF_TOTAL_RGU
 FROM FixedCustomerBase f
@@ -155,15 +155,15 @@ WHERE ActiveBOM=1 AND ActiveEOM=0
 SELECT f.*,RejoinerMonth
 ,CASE WHEN i.Fixed_Account IS NOT NULL THEN 1 ELSE 0 END AS RejoinerPopFlag
 -- Variabilizar
-,CASE WHEN RejoinerMonth>=date('2022-06-01') AND RejoinerMonth<=DATE_ADD('month',1,date('2022-06-01')) THEN 1 ELSE 0 END AS Fixed_PR
+,CASE WHEN RejoinerMonth>=date('2022-05-01') AND RejoinerMonth<=DATE_ADD('month',1,date('2022-05-01')) THEN 1 ELSE 0 END AS Fixed_PR
 FROM FixedCustomerBase f LEFT JOIN InactiveUsersMonth i ON f.Fixed_Account=i.Fixed_Account AND Fixed_Month=ExitMonth
 )
 ,FixedRejoinerFebPopulation AS(
-SELECT DISTINCT Fixed_Month,RejoinerPopFlag,Fixed_PR,Fixed_Account,date('2022-06-01') AS Month
+SELECT DISTINCT Fixed_Month,RejoinerPopFlag,Fixed_PR,Fixed_Account,date('2022-05-01') AS Month
 FROM RejoinersPopulation
 WHERE RejoinerPopFlag=1
 AND Fixed_PR=1
-AND Fixed_Month<>date('2022-06-01')
+AND Fixed_Month<>date('2022-05-01')
 GROUP BY 1,2,3,4
 )
 ,FullFixedBase_Rejoiners AS(
@@ -181,3 +181,4 @@ CONCAT(coalesce(B_VO_nm,''),coalesce(B_TV_nm,''),coalesce(B_BB_nm,'')) AS B_PLAN
 FROM FullFixedBase_Rejoiners
 )
 Select * From FinalTable
+
