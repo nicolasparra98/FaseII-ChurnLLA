@@ -50,7 +50,7 @@ from Sprint3_KPIsI order by 1
 ) 
 ,Sprint5_KPIs as(
 select distinct Month,e_final_tech_flag as Tech,sum(activebase) fixed_accounts,sum(outlier_repairs) as outlier_repairs,sum(totaltickets) as numbertickets
-from "lla_cco_int_ana_dev"."cwc_operational_drivers_5_dev" where e_final_tech_flag is not null
+from "lla_cco_int_ana_prod"."cwc_operational_drivers_5_prod"  where e_final_tech_flag is not null
 group by 1,2 order by 1,2
 )
 ,S5_CX_KPIs as(
