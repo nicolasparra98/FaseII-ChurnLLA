@@ -38,7 +38,7 @@ from Sprint3_KPIs where tech is not null order by 1
 ,Sprint5_KPIs as(
 select distinct Month,case when tech_concat LIKE '%FTTH%' then 'FTTH' when tech_concat NOT LIKE '%FTTH%' and tech_concat LIKE '%HFC%' then 'HFC' when tech_concat NOT LIKE '%FTTH%' and tech_concat NOT LIKE '%HFC%' AND tech_concat LIKE '%COPPER%' THEN 'COPPER' when tech_concat NOT LIKE '%FTTH%' and tech_concat NOT LIKE '%HFC%' AND tech_concat NOT LIKE '%COPPER%' AND tech_concat LIKE '%Wireless%' then 'Wireless' else null end as Tech,case when InteractionsTier in('2','>3') then sum(usersinteractions) end as RepeatedCallers,sum(fixed_accounts) fixed_accounts,sum(outlierrepairs) as outlier_repairs,sum(numbertickets) as numbertickets
 from (select *,concat(coalesce(b_final_techflag,''),coalesce(e_final_techflag,'')) as tech_concat
-from "lla_cco_int_stg"."cwp_operationaldrivers2_temp") group by 1,2,interactionstier order by 1
+from "lla_cco_int_ana_prod"."cwp_operational_drivers_5_prod") group by 1,2,interactionstier order by 1
 )
 ,S5_CX_KPIs as(
 select distinct month,'CWP' as Opco,'Panama' as Market,'Large' as MarketSize,'Fixed' as Product,'B2C' as Biz_Unit
