@@ -23,5 +23,5 @@ from all_kpis j left join Gross_adds_disc g on j.month=g.month and j.network=g.n
 
 select distinct Month,Opco,Market,MarketSize,Product,Biz_Unit,journey_waypoint,facet,kpi_name,kpi_meas,kpi_num,kpi_den,KPI_Sla, kpi_delay_display,kpi_disclaimer_display,kpi_disclaimer_meas,Network,extract(year from date(Month)) as ref_year,extract(month from date(month)) as ref_mo,null as kpi_sla_below_threshold,null as kpi_sla_middling_threshold,null as kpi_sla_above_threshold,null as kpi_sla_far_below_threshold,null as kpi_sla_far_above_threshold
 from disclaimer_fields
-where date(month)>=date('2022-01-01') and kpi_name like '%SL%'
+where date(month)>=date('2022-01-01') --and kpi_name like '%SL%'
 order by kpi_name
